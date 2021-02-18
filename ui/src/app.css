@@ -1,0 +1,15 @@
+html {
+  height: 100vh;
+}
+
+body {
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+#dat-gui {
+  position: fixed;
+  top: 0;
+  right: 20vh;
+}

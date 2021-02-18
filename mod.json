@@ -1,0 +1,11 @@
+{
+  "Name": "VuDebug",
+  "Authors": ["breaknix"],
+  "Description": "A graphical debugging framework for VU",
+  "Version": "1.0.0",
+  "HasVeniceEXT": true,
+  "HasWebUI": true,
+  "Dependencies": {
+    "veniceext": "^1.0.0"
+  }
+}
