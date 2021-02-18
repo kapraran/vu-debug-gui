@@ -41,6 +41,9 @@ class DebugGUIControl {
     if (this.type === DebugGUIControlType.Button)
       return this.callback.bind(this);
 
+    if (this.type === DebugGUIControlType.Text)
+      return this.options.DefValue.toString();
+
     return this.options.DefValue;
   }
 }
@@ -76,6 +79,22 @@ class DebugGUIManager {
 
     if (controlData.Type == DebugGUIControlType.Button) {
       gui.add(this.datObj, controlData.Id).name(controlData.Name);
+    }
+
+    if (controlData.Type == DebugGUIControlType.Checkbox) {
+      gui
+        .add(this.datObj, controlData.Id)
+        .name(controlData.Name)
+        .onChange(control.callback.bind(control));
+    }
+
+    if (controlData.Type == DebugGUIControlType.Text) {
+      gui
+        .add(this.datObj, controlData.Id)
+        .name(controlData.Name)
+        .onChange(control.callback.bind(control));
+
+      attachInputListener();
     }
 
     if (controlData.Type == DebugGUIControlType.Range) {
@@ -121,7 +140,17 @@ document.body.addEventListener("click", (ev) => {
 //   {
 //     Id: '123123123',
 //     Name: 'Hello',
-//     Folder: 'Bots',
-//     Type: 1,
+//     Options: {
+//       DefValue: true
+//     },
+//     Type: 2,
+//   },
+//   {
+//     Id: '12352ada',
+//     Name: 'Nope',
+//     Options: {
+//       DefValue: 'Hello Man'
+//     },
+//     Type: 3
 //   }
 // ])
