@@ -211,6 +211,10 @@ function DebugGUI.static:Print(str)
   -- TODO
 end
 
+function DebugGUI.static:Folder(name, context, callback)
+  debugGUIManager:Folder(name, context, callback)
+end
+
 function DebugGUI.static:Show(clear)
   debugGUIManager:Show(clear)
 end
