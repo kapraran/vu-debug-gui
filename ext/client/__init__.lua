@@ -28,8 +28,6 @@ Events:Subscribe('DBGUI:UIEvent', function(jsonData)
 end)
 
 function OnShow(clear, data)
-  print('OnShow')
-  print(data)
   local dataJson = json.encode(data)
   WebUI:ExecuteJS('vext.addControls(' .. dataJson ..')')
 end
