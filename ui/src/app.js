@@ -7,6 +7,24 @@ const DebugGUIControlType = {
   Range: 4
 }
 
+function attackInputListener() {
+  Array.from(document.querySelectorAll('input')).forEach(el => {
+    console.log('found el')
+    el.addEventListener('focus', enableKeyboard)
+    el.addEventListener('blur', disableKeyboard)
+  })
+}
+
+function enableKeyboard() {
+  console.log('EnableKeyboard')
+  WebUI.Call('EnableKeyboard')
+}
+
+function disableKeyboard() {
+  console.log('ResetKeyboard')
+  WebUI.Call('ResetKeyboard')
+}
+
 class DebugGUIControl {
   constructor(controlData) {
     this.id = controlData.Id
@@ -61,6 +79,8 @@ class DebugGUIManager {
       .gui
       .add(this.datObj, controlData.Name, control.options.Min, control.options.Max, control.options.Step)
       .onChange(control.callback.bind(control))
+
+      attackInputListener()
     }
   }
 
@@ -71,7 +91,6 @@ class DebugGUIManager {
 }
 
 const manager = new DebugGUIManager()
-
 
 // const obj = {
 //   a: false,
@@ -93,14 +112,6 @@ const manager = new DebugGUIManager()
 window.vext = {
   addControls: manager.addControls.bind(manager)
 }
-
-// vext.addControls([
-//   {
-//     Id: '12345',
-//     Name: 'Btn',
-//     Type: 1
-//   }
-// ])
 
 // vext.addControls([
 //   {
