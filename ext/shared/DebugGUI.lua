@@ -2,6 +2,7 @@ DebugGUIControlType = {
   Button = 1,
   Checkbox = 2,
   Text = 3,
+  Range = 4
 }
 
 -- 
@@ -178,6 +179,27 @@ function DebugGUI.static:Text(name, defValue, context, callback)
     {
       DefValue = defValue
     },
+    context,
+    callback
+  )
+
+  debugGUIManager:Add(control)
+end
+
+function DebugGUI.static:Range(name, options, context, callback)
+  options = options or {}
+
+  -- defaults
+  options.Min = (options.Min ~= nil and options.Min) or 0
+  options.Max = (options.Max ~= nil and options.Max) or 100
+  options.Step = (options.Step ~= nil and options.Step) or 1
+  options.DefValue = options.DefValue or options.Min
+
+  local control = DebugGUIControl(
+    DebugGUIControlType.Range,
+    name,
+    nil,
+    options,
     context,
     callback
   )

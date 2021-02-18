@@ -4,6 +4,7 @@ const DebugGUIControlType = {
   Button: 1,
   Checkbox: 2,
   Text: 3,
+  Range: 4
 }
 
 class DebugGUIControl {
@@ -11,6 +12,7 @@ class DebugGUIControl {
     this.id = controlData.Id
     this.type = controlData.Type
     this.name = controlData.Name
+    this.options = controlData.Options
     this.isClient = controlData.IsClient
   }
 
@@ -31,9 +33,10 @@ class DebugGUIControl {
   createObjValue() {
     if (this.type === DebugGUIControlType.Button)
       return this.callback.bind(this)
+
+    return this.options.DefValue
   }
 }
-
 
 class DebugGUIManager {
   constructor() {
@@ -47,10 +50,17 @@ class DebugGUIManager {
   addControl(controlData) {
     const control = new DebugGUIControl(controlData)
     this.controls.push(control)
+    this.datObj[controlData.Name] = control.createObjValue()
 
     if (controlData.Type == DebugGUIControlType.Button) {
-      this.datObj[controlData.Name] = control.createObjValue()
       this.gui.add(this.datObj, controlData.Name)
+    }
+
+    if (controlData.Type == DebugGUIControlType.Range) {
+      this
+      .gui
+      .add(this.datObj, controlData.Name, control.options.Min, control.options.Max, control.options.Step)
+      .onChange(control.callback.bind(control))
     }
   }
 
@@ -89,5 +99,19 @@ window.vext = {
 //     Id: '12345',
 //     Name: 'Btn',
 //     Type: 1
+//   }
+// ])
+
+// vext.addControls([
+//   {
+//     Id: '12345',
+//     Name: 'rng',
+//     Type: 4,
+//     Options: {
+//       DefValue: 33,
+//       Min: 0,
+//       Max: 100,
+//       Step: 1
+//     }
 //   }
 // ])
