@@ -2,6 +2,8 @@ import dat from "dat.gui";
 import { enableKeyboard, resetKeyboard, resetMKB } from "./utils";
 import { DebugGUIControlType, DebugGUICustomEvents } from "./enums";
 
+const printArea = document.querySelector("#print-area");
+
 function attachInputListener() {
   Array.from(document.querySelectorAll("input")).forEach((el) => {
     el.addEventListener("focus", enableKeyboard);
@@ -49,27 +51,43 @@ class DebugGUIManager {
     this.gui.domElement.id = "dat-gui";
 
     this.controls = [];
+    this.folders = {};
     this.datObj = {};
   }
 
   addControl(controlData) {
+    if (controlData.Id in this.datObj) return;
+
+    let gui = this.gui;
+
+    if (controlData.hasOwnProperty("Folder")) {
+      if (!this.folders.hasOwnProperty(controlData.Folder)) {
+        this.folders[controlData.Folder] = this.gui.addFolder(
+          controlData.Folder
+        );
+      }
+
+      gui = this.folders[controlData.Folder];
+    }
+
     const control = new DebugGUIControl(controlData);
     this.controls.push(control);
-    this.datObj[controlData.Name] = control.createObjValue();
+    this.datObj[controlData.Id] = control.createObjValue();
 
     if (controlData.Type == DebugGUIControlType.Button) {
-      this.gui.add(this.datObj, controlData.Name);
+      gui.add(this.datObj, controlData.Id).name(controlData.Name);
     }
 
     if (controlData.Type == DebugGUIControlType.Range) {
-      this.gui
+      gui
         .add(
           this.datObj,
-          controlData.Name,
+          controlData.Id,
           control.options.Min,
           control.options.Max,
           control.options.Step
         )
+        .name(controlData.Name)
         .onChange(control.callback.bind(control));
 
       attachInputListener();
@@ -90,5 +108,20 @@ window.vext = {
 document.body.addEventListener("click", (ev) => {
   if (ev.target !== document.body) return;
   resetMKB();
-  WebUI.Call('DispatchEvent', DebugGUICustomEvents.ResetMKB)
+  WebUI.Call("DispatchEvent", DebugGUICustomEvents.ResetMKB);
 });
+
+// const str = JSON.stringify({
+//   Position: [1, 2, 3],
+//   Alive: false
+// }, null, 2)
+// printArea.innerHTML = str.substr(1, str.length - 2).trim();
+
+// manager.addControls([
+//   {
+//     Id: '123123123',
+//     Name: 'Hello',
+//     Folder: 'Bots',
+//     Type: 1,
+//   }
+// ])
