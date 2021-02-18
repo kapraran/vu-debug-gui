@@ -11,13 +11,15 @@ class DebugGUIControl {
     this.id = controlData.Id
     this.type = controlData.Type
     this.name = controlData.Name
+    this.isClient = controlData.IsClient
   }
 
   callback(value) {
     console.log(`DebugGUIControl: ${this.id} was clicked`)
 
     const payload = {
-      id: this.id
+      id: this.id,
+      isClient: this.isClient
     }
 
     if (value !== undefined)
