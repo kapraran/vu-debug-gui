@@ -6,5 +6,6 @@ export const DebugGUIControlType = {
 };
 
 export const DebugGUICustomEvents = {
-  UIEvent: "DBGUI:UIEvent"
+  UIEvent: "DBGUI:UIEvent",
+  ResetMKB: "DBGUI:ResetMKB"
 }

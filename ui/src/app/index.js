@@ -1,5 +1,5 @@
 import dat from "dat.gui";
-import { enableKeyboard, resetKeyboard } from "./utils";
+import { enableKeyboard, resetKeyboard, resetMKB } from "./utils";
 import { DebugGUIControlType, DebugGUICustomEvents } from "./enums";
 
 function attachInputListener() {
@@ -86,3 +86,9 @@ const manager = new DebugGUIManager();
 window.vext = {
   addControls: manager.addControls.bind(manager),
 };
+
+document.body.addEventListener("click", (ev) => {
+  if (ev.target !== document.body) return;
+  resetMKB();
+  WebUI.Call('DispatchEvent', DebugGUICustomEvents.ResetMKB)
+});

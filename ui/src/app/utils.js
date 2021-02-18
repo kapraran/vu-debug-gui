@@ -1,9 +1,12 @@
 export const enableKeyboard = () => {
-  console.log('EnableKeyboard')
-  WebUI.Call('EnableKeyboard')
-}
+  WebUI.Call("EnableKeyboard");
+};
 
 export const resetKeyboard = () => {
-  console.log('ResetKeyboard')
-  WebUI.Call('ResetKeyboard')
-}
+  WebUI.Call("ResetKeyboard");
+};
+
+export const resetMKB = () => {
+  WebUI.Call("ResetMouse");
+  WebUI.Call("ResetKeyboard");
+};

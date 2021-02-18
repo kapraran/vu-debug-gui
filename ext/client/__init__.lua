@@ -1,4 +1,4 @@
-local mouseEnabled = true
+local mouseDisabled = true
 
 Events:Subscribe('Extension:Loaded', function()
   WebUI:Init()
@@ -6,9 +6,9 @@ end)
 
 Events:Subscribe('Player:UpdateInput', function()
   if InputManager:WentKeyDown(InputDeviceKeys.IDK_F1) then
-    mouseEnabled = not mouseEnabled
+    mouseDisabled = not mouseDisabled
 
-    if mouseEnabled then
+    if mouseDisabled then
       WebUI:ResetMouse()
       WebUI:ResetKeyboard()
     else
@@ -25,6 +25,13 @@ Events:Subscribe('DBGUI:UIEvent', function(jsonData)
   else
     NetEvents:Send('DBGUI:OnChange.Net', data.id, data.value)
   end
+end)
+
+Events:Subscribe('DBGUI:ResetMKB', function(jsonData)
+  mouseDisabled = true;
+
+  WebUI:ResetMouse()
+  WebUI:ResetKeyboard()
 end)
 
 function OnShow(clear, data)
