@@ -2,7 +2,8 @@ DebugGUIControlType = {
   Button = 1,
   Checkbox = 2,
   Text = 3,
-  Range = 4
+  Range = 4,
+  Dropdown = 5
 }
 
 -- 
@@ -197,6 +198,25 @@ function DebugGUI.static:Range(name, options, context, callback)
 
   local control = DebugGUIControl(
     DebugGUIControlType.Range,
+    name,
+    nil,
+    options,
+    context,
+    callback
+  )
+
+  debugGUIManager:Add(control)
+end
+
+function DebugGUI.static:Dropdown(name, options, context, callback)
+  options = options or {}
+
+  -- defaults
+  options.Values = (options.Values ~= nil and options.Values) or {0}
+  options.DefValue = options.DefValue or 0
+
+  local control = DebugGUIControl(
+    DebugGUIControlType.Dropdown,
     name,
     nil,
     options,

@@ -111,6 +111,13 @@ class DebugGUIManager {
 
       attachInputListener();
     }
+
+    if (controlData.Type == DebugGUIControlType.Dropdown) {
+      gui
+        .add(this.datObj, controlData.Id, control.options.Values)
+        .name(controlData.Name)
+        .onChange(control.callback.bind(control));
+    }
   }
 
   addControls(controlsData) {
