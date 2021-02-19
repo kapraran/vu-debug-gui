@@ -12,6 +12,8 @@ DebugGUIControlType = {
 
 class "DebugGUIControl"
 
+DebugGUIControl.static.OrderIndex = 1
+
 function DebugGUIControl:__init(_type, name, options, context, callback)
   if callback == nil then
     callback = context
@@ -21,11 +23,15 @@ function DebugGUIControl:__init(_type, name, options, context, callback)
   self.id = MathUtils:RandomGuid()
   self.type = _type
   self.name = name
-  self.folder = nil
   self.options = options
   self.context = context
   self.callback = callback
   self.isClient = SharedUtils:IsClientModule()
+
+  self.folder = nil
+  self.order = DebugGUIControl.OrderIndex
+
+  DebugGUIControl.static.OrderIndex = DebugGUIControl.OrderIndex + 1
 end
 
 function DebugGUIControl:ExecuteCallback(value, player)
@@ -42,7 +48,7 @@ end
 
 function DebugGUIControl:AsTable()
   return {
-    Id = self.id:ToString('D'),
+    Id = self.id:ToString("D"),
     Type = self.type,
     Name = self.name,
     Folder = self.folder,
@@ -69,9 +75,9 @@ function DebugGUIManager:RegisterEvents()
   NetEvents:Subscribe("DBGUI:RequestControls.Net", self, self.Show)
 
   if SharedUtils:IsClientModule() then
-    Events:Subscribe('DBGUI:OnChange', self, self.OnChange)
+    Events:Subscribe("DBGUI:OnChange", self, self.OnChange)
   else
-    NetEvents:Subscribe('DBGUI:OnChange.Net', self, self.OnChangeNet)
+    NetEvents:Subscribe("DBGUI:OnChange.Net", self, self.OnChangeNet)
   end
 end
 
@@ -98,7 +104,7 @@ function DebugGUIManager:Add(control)
     control.folder = self.__addInFolder
   end
 
-  self.controls[control.id:ToString('D')] = control
+  self.controls[control.id:ToString("D")] = control
 end
 
 function DebugGUIManager:Folder(name, context, callback)
@@ -125,15 +131,26 @@ end
 function DebugGUIManager:Show(clear)
   clear = not (not clear)
 
+  -- convert to array
+  local controlsOrdered = {}
+  for _, control in pairs(self.controls) do
+    table.insert(controlsOrdered, control)
+  end
+
+  -- sort based on .order
+  table.sort(controlsOrdered, function(controlA, controlB)
+    return controlA.order < controlB.order
+  end)
+
   local data = {}
-  for id, control in pairs(self.controls) do
+  for _, control in ipairs(controlsOrdered) do
     table.insert(data, control:AsTable())
   end
 
   if SharedUtils:IsClientModule() then
-    Events:Dispatch('DBGUI:Show', clear, data)
+    Events:Dispatch("DBGUI:Show", clear, data)
   else
-    NetEvents:Broadcast('DBGUI:Show.Net', clear, data)
+    NetEvents:Broadcast("DBGUI:Show.Net", clear, data)
   end
 end
 
