@@ -65,14 +65,16 @@ class "DebugGUIManager"
 
 function DebugGUIManager:__init()
   self.controls = {}
+
+  self.__controlsRequested = false
   self.__addInFolder = nil
 
   self:RegisterEvents()
 end
 
 function DebugGUIManager:RegisterEvents()
-  Events:Subscribe("DBGUI:RequestControls", self, self.Show)
-  NetEvents:Subscribe("DBGUI:RequestControls.Net", self, self.Show)
+  Events:Subscribe("DBGUI:RequestControls", self, self.OnRequestControls)
+  NetEvents:Subscribe("DBGUI:RequestControls.Net", self, self.OnRequestControls)
 
   if SharedUtils:IsClientModule() then
     Events:Subscribe("DBGUI:OnChange", self, self.OnChange)
@@ -128,7 +130,16 @@ function DebugGUIManager:Folder(name, context, callback)
   self.__addInFolder = nil
 end
 
+function DebugGUIManager:OnRequestControls()
+  self.__controlsRequested = true
+  self:Show(false)
+end
+
 function DebugGUIManager:Show(clear)
+  if not self.__controlsRequested then
+    return
+  end
+
   clear = not (not clear)
 
   -- convert to array

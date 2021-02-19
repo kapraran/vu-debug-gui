@@ -14,7 +14,7 @@ DebugGUI:Button("Next Round", function()
   RCON:SendCommand("mapList.runNextRound")
 end)
 
--- A folder that contains player related controls
+-- A folder that groups player related controls
 DebugGUI:Folder("Player", function ()
   -- A button to kill the local player
   DebugGUI:Button("Suicide", function(value, player)
@@ -24,7 +24,7 @@ DebugGUI:Folder("Player", function ()
   end)
 
   -- A range slider to adjust player's health
-  DebugGUI:Range("Health", {Min = 0, Max = 100}, function(value, player)
+  DebugGUI:Range("Health", {DefValue = 100}, function(value, player)
     if player ~= nil and player.soldier ~= nil then
       player.soldier.health = value
     end
@@ -32,6 +32,13 @@ DebugGUI:Folder("Player", function ()
 end)
 
 ```
+
+The above code will create this result
+
+![](.github/debug-gui-screen.webp)
+
+## Usage
+TODO
 
 ## Supported Controls
 
@@ -56,13 +63,10 @@ DebugGUI:Range(name, options, context, callback)
 ```
 
 ### Dropdown
-! Unfortunately, native dropdowns don't work as expected, in VU
+! Unfortunately, native dropdowns don't work as expected in VU
 ```
 DebugGUI:Dropdown(name, options, context, callback)
 ```
-
-## Usage
-TODO
 
 ## Notice
 
