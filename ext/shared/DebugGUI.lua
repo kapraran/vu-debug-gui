@@ -12,7 +12,7 @@ DebugGUIControlType = {
 
 class "DebugGUIControl"
 
-function DebugGUIControl:__init(_type, name, folder, options, context, callback)
+function DebugGUIControl:__init(_type, name, options, context, callback)
   if callback == nil then
     callback = context
     context = nil
@@ -21,7 +21,7 @@ function DebugGUIControl:__init(_type, name, folder, options, context, callback)
   self.id = MathUtils:RandomGuid()
   self.type = _type
   self.name = name
-  self.folder = folder
+  self.folder = nil
   self.options = options
   self.context = context
   self.callback = callback
@@ -149,8 +149,7 @@ function DebugGUI.static:Button(name, context, callback)
   local control = DebugGUIControl(
     DebugGUIControlType.Button,
     name,
-    nil,
-    nil,
+    {},
     context,
     callback
   )
@@ -162,7 +161,6 @@ function DebugGUI.static:Checkbox(name, defValue, context, callback)
   local control = DebugGUIControl(
     DebugGUIControlType.Checkbox,
     name,
-    nil,
     {
       DefValue = defValue
     },
@@ -177,7 +175,6 @@ function DebugGUI.static:Text(name, defValue, context, callback)
   local control = DebugGUIControl(
     DebugGUIControlType.Text,
     name,
-    nil,
     {
       DefValue = defValue
     },
@@ -200,7 +197,6 @@ function DebugGUI.static:Range(name, options, context, callback)
   local control = DebugGUIControl(
     DebugGUIControlType.Range,
     name,
-    nil,
     options,
     context,
     callback
@@ -219,7 +215,6 @@ function DebugGUI.static:Dropdown(name, options, context, callback)
   local control = DebugGUIControl(
     DebugGUIControlType.Dropdown,
     name,
-    nil,
     options,
     context,
     callback

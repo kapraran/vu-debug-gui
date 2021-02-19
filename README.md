@@ -35,5 +35,25 @@ end)
 
 ## Supported Controls
 
+```
+DebugGUI:Button(name, context, callback)
+```
+
+```
+DebugGUI:Checkbox(name, defValue, context, callback)
+```
+
+```
+DebugGUI:Text(name, defValue, context, callback)
+```
+
+```
+DebugGUI:Range(name, options, context, callback)
+```
+
+```
+DebugGUI:Dropdown(name, options, context, callback)
+```
+
 ## Usage
 

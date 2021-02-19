@@ -1,3 +1,5 @@
+require "__shared/config"
+
 local mouseDisabled = true
 
 Events:Subscribe("Extension:Loaded", function()
@@ -12,7 +14,7 @@ Events:Subscribe("Level:Loaded", function()
 end)
 
 Events:Subscribe("Player:UpdateInput", function()
-  if InputManager:WentKeyDown(InputDeviceKeys.IDK_F1) then
+  if InputManager:WentKeyDown(Config.EnableMKBKey) then
     mouseDisabled = not mouseDisabled
 
     if mouseDisabled then
