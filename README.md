@@ -35,25 +35,37 @@ end)
 
 ## Supported Controls
 
+### Button
 ```
 DebugGUI:Button(name, context, callback)
 ```
 
+### Checkbox
 ```
 DebugGUI:Checkbox(name, defValue, context, callback)
 ```
 
+### Text
 ```
 DebugGUI:Text(name, defValue, context, callback)
 ```
 
+### Range
 ```
 DebugGUI:Range(name, options, context, callback)
 ```
 
+### Dropdown
+! Unfortunately, native dropdowns don't work as expected, in VU
 ```
 DebugGUI:Dropdown(name, options, context, callback)
 ```
 
 ## Usage
+TODO
 
+## Notice
+
+* There's no automatic syncing between clients. It's up to the mod developer to sync those changes.
+
+* You can't update the control's value from lua after it's creation, for now.
