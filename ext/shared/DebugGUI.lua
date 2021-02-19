@@ -3,7 +3,8 @@ DebugGUIControlType = {
   Checkbox = 2,
   Text = 3,
   Range = 4,
-  Dropdown = 5
+  Dropdown = 5,
+  Number = 6
 }
 
 -- 
@@ -202,6 +203,20 @@ end
 function DebugGUI.static:Text(name, defValue, context, callback)
   local control = DebugGUIControl(
     DebugGUIControlType.Text,
+    name,
+    {
+      DefValue = defValue
+    },
+    context,
+    callback
+  )
+
+  debugGUIManager:Add(control)
+end
+
+function DebugGUI.static:Number(name, defValue, context, callback)
+  local control = DebugGUIControl(
+    DebugGUIControlType.Number,
     name,
     {
       DefValue = defValue

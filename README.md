@@ -57,6 +57,11 @@ DebugGUI:Checkbox(name, defValue, context, callback)
 DebugGUI:Text(name, defValue, context, callback)
 ```
 
+### Number
+```
+DebugGUI:Number(name, defValue, context, callback)
+```
+
 ### Range
 ```
 DebugGUI:Range(name, options, context, callback)

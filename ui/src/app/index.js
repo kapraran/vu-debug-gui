@@ -99,6 +99,16 @@ class DebugGUIManager {
       attachInputListener();
     }
 
+    if (controlData.Type == DebugGUIControlType.Number) {
+      gui
+        .add(this.datObj, controlData.Id)
+        .step(0.001)
+        .name(controlData.Name)
+        .onChange(control.callback.bind(control));
+
+      attachInputListener();
+    }
+
     if (controlData.Type == DebugGUIControlType.Range) {
       gui
         .add(
@@ -133,7 +143,7 @@ window.vext = {
   addControls: manager.addControls.bind(manager),
 };
 
-document.body.addEventListener("dblclick", (ev) => {
+document.body.addEventListener("click", (ev) => {
   if (ev.target !== document.body) return;
   resetMKB();
   WebUI.Call("DispatchEvent", DebugGUICustomEvents.ResetMKB);

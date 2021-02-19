@@ -4,6 +4,7 @@ export const DebugGUIControlType = {
   Text: 3,
   Range: 4,
   Dropdown: 5,
+  Number: 6
 };
 
 export const DebugGUICustomEvents = {
