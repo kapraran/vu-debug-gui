@@ -61,6 +61,8 @@ class DebugGUIManager {
   addControl(controlData) {
     if (controlData.Id in this.datObj) return;
 
+    if (this.controls.length === 0) this.gui.domElement.style.display = "block";
+
     let gui = this.gui;
 
     if (controlData.hasOwnProperty("Folder")) {
@@ -131,7 +133,7 @@ window.vext = {
   addControls: manager.addControls.bind(manager),
 };
 
-document.body.addEventListener("click", (ev) => {
+document.body.addEventListener("dblclick", (ev) => {
   if (ev.target !== document.body) return;
   resetMKB();
   WebUI.Call("DispatchEvent", DebugGUICustomEvents.ResetMKB);

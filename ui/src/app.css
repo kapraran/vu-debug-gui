@@ -12,6 +12,7 @@ body {
   position: fixed;
   top: 0;
   right: 20vh;
+  display: none;
 }
 
 pre#print-area {
