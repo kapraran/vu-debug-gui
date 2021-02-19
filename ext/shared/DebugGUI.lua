@@ -65,7 +65,8 @@ function DebugGUIManager:__init()
 end
 
 function DebugGUIManager:RegisterEvents()
-  Events:Subscribe('Level:Loaded', self, self.Show)
+  Events:Subscribe("DBGUI:RequestControls", self, self.Show)
+  NetEvents:Subscribe("DBGUI:RequestControls.Net", self, self.Show)
 
   if SharedUtils:IsClientModule() then
     Events:Subscribe('DBGUI:OnChange', self, self.OnChange)
