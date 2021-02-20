@@ -143,33 +143,9 @@ window.vext = {
   addControls: manager.addControls.bind(manager),
 };
 
-document.body.addEventListener("click", (ev) => {
-  if (ev.target !== document.body) return;
-  resetMKB();
-  WebUI.Call("DispatchEvent", DebugGUICustomEvents.ResetMKB);
-});
-
-// const str = JSON.stringify({
-//   Position: [1, 2, 3],
-//   Alive: false
-// }, null, 2)
-// printArea.innerHTML = str.substr(1, str.length - 2).trim();
-
-// manager.addControls([
-//   {
-//     Id: '123123123',
-//     Name: 'Hello',
-//     Options: {
-//       DefValue: true
-//     },
-//     Type: 2,
-//   },
-//   {
-//     Id: '12352ada',
-//     Name: 'Nope',
-//     Options: {
-//       DefValue: 'Hello Man'
-//     },
-//     Type: 3
-//   }
-// ])
+// TODO Remove it until i add a config option about it
+// document.body.addEventListener("click", (ev) => {
+//   if (ev.target !== document.body) return;
+//   resetMKB();
+//   WebUI.Call("DispatchEvent", DebugGUICustomEvents.ResetMKB);
+// });
