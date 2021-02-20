@@ -1,3 +1,9 @@
+---
+--- Author:   Nikos Kapraras <nikos@kapraran.dev>
+--- URL:      https://github.com/kapraran/vu-debug-gui
+--- License:  https://choosealicense.com/licenses/mit/
+---
+
 DebugGUIControlType = {
   Button = 1,
   Checkbox = 2,

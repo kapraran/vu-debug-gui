@@ -44,8 +44,7 @@ Events:Subscribe("DBGUI:ResetMKB", function(jsonData)
 end)
 
 function OnShow(clear, data)
-  local dataJson = json.encode(data)
-  WebUI:ExecuteJS("vext.addControls(" .. dataJson ..")")
+  WebUI:ExecuteJS("vext.addControls(" .. json.encode(data) ..")")
 end
 
 Events:Subscribe("DBGUI:Show", OnShow)

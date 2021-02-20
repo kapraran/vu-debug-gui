@@ -3,6 +3,7 @@
   "Authors": ["breaknix"],
   "Description": "A graphical debugging framework for VU",
   "Version": "1.0.0",
+  "URL": "https://github.com/kapraran/vu-debug-gui",
   "HasVeniceEXT": true,
   "HasWebUI": true,
   "Dependencies": {
