@@ -35,6 +35,7 @@ function DebugGUIControl:__init(_type, name, options, context, callback)
   self.callback = callback
   self.isClient = SharedUtils:IsClientModule()
 
+  self.lastValue = options.DefValue
   self.folder = nil
   self.order = DebugGUIControl.OrderIndex
 
@@ -42,6 +43,8 @@ function DebugGUIControl:__init(_type, name, options, context, callback)
 end
 
 function DebugGUIControl:ExecuteCallback(value, player)
+  self.lastValue = value
+
   if self.callback == nil then
     return
   end
@@ -51,6 +54,10 @@ function DebugGUIControl:ExecuteCallback(value, player)
   else
     self.callback(self.context, value, player)
   end
+end
+
+function DebugGUIControl:Get()
+  return self.lastValue
 end
 
 function DebugGUIControl:AsTable()
@@ -106,7 +113,7 @@ end
 
 function DebugGUIManager:Add(control)
   if control == nil then
-    return
+    return nil
   end
 
   if self.__addInFolder ~= nil then
@@ -114,6 +121,8 @@ function DebugGUIManager:Add(control)
   end
 
   self.controls[control.id:ToString("D")] = control
+
+  return control
 end
 
 function DebugGUIManager:Folder(name, context, callback)
@@ -189,7 +198,7 @@ function DebugGUI.static:Button(name, context, callback)
     callback
   )
 
-  debugGUIManager:Add(control)
+  return debugGUIManager:Add(control)
 end
 
 function DebugGUI.static:Checkbox(name, defValue, context, callback)
@@ -203,7 +212,7 @@ function DebugGUI.static:Checkbox(name, defValue, context, callback)
     callback
   )
 
-  debugGUIManager:Add(control)
+  return debugGUIManager:Add(control)
 end
 
 function DebugGUI.static:Text(name, defValue, context, callback)
@@ -217,7 +226,7 @@ function DebugGUI.static:Text(name, defValue, context, callback)
     callback
   )
 
-  debugGUIManager:Add(control)
+  return debugGUIManager:Add(control)
 end
 
 function DebugGUI.static:Number(name, defValue, context, callback)
@@ -231,7 +240,7 @@ function DebugGUI.static:Number(name, defValue, context, callback)
     callback
   )
 
-  debugGUIManager:Add(control)
+  return debugGUIManager:Add(control)
 end
 
 function DebugGUI.static:Range(name, options, context, callback)
@@ -251,7 +260,7 @@ function DebugGUI.static:Range(name, options, context, callback)
     callback
   )
 
-  debugGUIManager:Add(control)
+  return debugGUIManager:Add(control)
 end
 
 function DebugGUI.static:Dropdown(name, options, context, callback)
@@ -269,7 +278,7 @@ function DebugGUI.static:Dropdown(name, options, context, callback)
     callback
   )
 
-  debugGUIManager:Add(control)
+  return debugGUIManager:Add(control)
 end
 
 function DebugGUI.static:Print(str)
