@@ -47,9 +47,9 @@ Press `F1` to toggle the mouse/keyboard (you can change the key in the config).
 
 ## Supported Controls
 
-There's a number of avaible controls to use, based on what dat.GUI has to offer.
+There's a number of available controls to use, based on what dat.GUI has to offer.
 
-In every case, the callback has the `value` as the first argument. If the control was created in a server script, the `player`, who triggers it, is passed as the second argument.
+In every case, the callback has the `value` as the first argument. If the control was created in a server script, the `player` who triggers it is passed as the second argument.
 
 ### Button
 ```
