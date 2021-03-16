@@ -122,6 +122,11 @@ function DebugGUIManager:Add(control)
 
   self.controls[control.id:ToString("D")] = control
 
+  if self.__controlsRequested then
+    self.__controlsRequested = false
+    self:Show(false)
+  end
+
   return control
 end
 
