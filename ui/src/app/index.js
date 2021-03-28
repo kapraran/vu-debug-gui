@@ -1,8 +1,15 @@
 import dat from "dat.gui";
+import throttle from "lodash.throttle";
 import { enableKeyboard, resetKeyboard, resetMKB } from "./utils";
 import { DebugGUIControlType, DebugGUICustomEvents } from "./enums";
 
 const printArea = document.querySelector("#print-area");
+
+let throttledCall = null;
+window.addEventListener(
+  "load",
+  () => (throttledCall = throttle(WebUI.Call, 0.1))
+);
 
 function attachInputListener() {
   Array.from(document.querySelectorAll("input")).forEach((el) => {
@@ -30,7 +37,9 @@ class DebugGUIControl {
 
     if (value !== undefined) payload.value = value;
 
-    WebUI.Call(
+    if (!throttledCall) return;
+
+    throttledCall(
       "DispatchEvent",
       DebugGUICustomEvents.UIEvent,
       JSON.stringify(payload)
@@ -147,5 +156,7 @@ window.vext = {
 // document.body.addEventListener("click", (ev) => {
 //   if (ev.target !== document.body) return;
 //   resetMKB();
-//   WebUI.Call("DispatchEvent", DebugGUICustomEvents.ResetMKB);
+
+//   if (!throttledCall) return;
+//   throttledCall("DispatchEvent", DebugGUICustomEvents.ResetMKB);
 // });
