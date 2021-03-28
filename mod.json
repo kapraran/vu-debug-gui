@@ -2,7 +2,7 @@
   "Name": "VuDebug",
   "Authors": ["breaknix"],
   "Description": "A graphical debugging framework for VU",
-  "Version": "1.1.1",
+  "Version": "1.1.2",
   "URL": "https://github.com/kapraran/vu-debug-gui",
   "HasVeniceEXT": true,
   "HasWebUI": true,
