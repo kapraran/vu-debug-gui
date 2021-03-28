@@ -8,7 +8,7 @@ const printArea = document.querySelector("#print-area");
 let throttledCall = null;
 window.addEventListener(
   "load",
-  () => (throttledCall = throttle(WebUI.Call, 0.1))
+  () => (throttledCall = throttle(WebUI.Call, 8))
 );
 
 function attachInputListener() {
