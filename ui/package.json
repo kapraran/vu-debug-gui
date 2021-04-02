@@ -1,14 +1,17 @@
 {
   "scripts": {
     "dev": "parcel serve ./src/index.html",
-    "build:parcel": "rimraf dist && parcel build ./src/index.html",
+    "build:parcel": "rimraf dist && parcel build ./src/index.html --no-source-maps",
     "build:vuic": "vuicc ./dist ../ui.vuic",
     "build": "yarn build:parcel && yarn build:vuic"
   },
   "dependencies": {
     "dat.gui": "0.7.7",
+    "lodash.throttle": "4.1.1",
     "parcel": "2.0.0-beta.1",
-    "rimraf": "3.0.2",
-    "lodash.throttle": "4.1.1"
+    "rimraf": "3.0.2"
+  },
+  "devDependencies": {
+    "@types/dat.gui": "^0.7.6"
   }
 }
