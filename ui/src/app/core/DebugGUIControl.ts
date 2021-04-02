@@ -11,11 +11,11 @@ type ControlOptions = {
 };
 
 export default class DebugGUIControl {
-  private id: string;
-  private type: number;
-  private name: string;
-  private options: ControlOptions;
-  private isClient: boolean;
+  readonly id: string;
+  readonly type: number;
+  readonly name: string;
+  readonly options: ControlOptions;
+  readonly isClient: boolean;
 
   constructor(controlData) {
     this.id = controlData.Id;
@@ -52,13 +52,5 @@ export default class DebugGUIControl {
       return this.options.DefValue.toString();
 
     return this.options.DefValue;
-  }
-
-  /**
-   *
-   * @returns
-   */
-  getOptions() {
-    return this.options;
   }
 }
