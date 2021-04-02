@@ -1,6 +1,6 @@
 enum DebugGUICustomEvent {
   UIEvent = "DBGUI:UIEvent",
-  ResetMKB = "DBGUI:ResetMKB"
+  ResetMKB = "DBGUI:ResetMKB",
 }
 
-export default DebugGUICustomEvent
+export default DebugGUICustomEvent;

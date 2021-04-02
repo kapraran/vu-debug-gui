@@ -7,4 +7,4 @@ enum DebugGUIControlType {
   Number,
 }
 
-export default DebugGUIControlType
+export default DebugGUIControlType;
