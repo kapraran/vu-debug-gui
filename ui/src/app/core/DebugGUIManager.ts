@@ -1,15 +1,7 @@
-import dat from "dat.gui";
-import throttle from "lodash.throttle";
-import { enableKeyboard, resetKeyboard, resetMKB } from "./utils";
-import { DebugGUIControlType, DebugGUICustomEvents } from "./enums";
-
-const printArea = document.querySelector("#print-area");
-
-let throttledCall = null;
-window.addEventListener(
-  "load",
-  () => (throttledCall = throttle(WebUI.Call, 8))
-);
+import dat, { GUI } from "dat.gui";
+import DebugGUIControlType from "../enums/DebugGUIControlType";
+import DebugGUIControl from "./DebugGUIControl";
+import { enableKeyboard, resetKeyboard } from "./WebUI";
 
 function attachInputListener() {
   Array.from(document.querySelectorAll("input")).forEach((el) => {
@@ -18,46 +10,12 @@ function attachInputListener() {
   });
 }
 
-class DebugGUIControl {
-  constructor(controlData) {
-    this.id = controlData.Id;
-    this.type = controlData.Type;
-    this.name = controlData.Name;
-    this.options = controlData.Options;
-    this.isClient = controlData.IsClient;
-  }
+export default class DebugGUIManager {
+  private gui: GUI
+  private controls: DebugGUIControl[]
+  private folders: {[name: string]: GUI}
+  private datObj: {[name: string]: any}
 
-  callback(value) {
-    console.log(`DebugGUIControl: ${this.id} was clicked`);
-
-    const payload = {
-      id: this.id,
-      isClient: this.isClient,
-    };
-
-    if (value !== undefined) payload.value = value;
-
-    if (!throttledCall) return;
-
-    throttledCall(
-      "DispatchEvent",
-      DebugGUICustomEvents.UIEvent,
-      JSON.stringify(payload)
-    );
-  }
-
-  createObjValue() {
-    if (this.type === DebugGUIControlType.Button)
-      return this.callback.bind(this);
-
-    if (this.type === DebugGUIControlType.Text)
-      return this.options.DefValue.toString();
-
-    return this.options.DefValue;
-  }
-}
-
-class DebugGUIManager {
   constructor() {
     this.gui = new dat.GUI();
     this.gui.domElement.id = "dat-gui";
@@ -67,14 +25,11 @@ class DebugGUIManager {
     this.datObj = {};
   }
 
-  addControl(controlData) {
-    if (controlData.Id in this.datObj) return;
-
-    if (this.controls.length === 0) this.gui.domElement.style.display = "block";
-
+  resolveGUI(controlData) {
     let gui = this.gui;
 
     if (controlData.hasOwnProperty("Folder")) {
+      // create folder if it doesn't exists
       if (!this.folders.hasOwnProperty(controlData.Folder)) {
         this.folders[controlData.Folder] = this.gui.addFolder(
           controlData.Folder
@@ -84,6 +39,15 @@ class DebugGUIManager {
       gui = this.folders[controlData.Folder];
     }
 
+    return gui
+  }
+
+  addControl(controlData) {
+    if (controlData.Id in this.datObj) return;
+
+    if (this.controls.length === 0) this.gui.domElement.style.display = "block";
+
+    const gui = this.resolveGUI(controlData)
     const control = new DebugGUIControl(controlData);
     this.controls.push(control);
     this.datObj[controlData.Id] = control.createObjValue();
@@ -123,9 +87,9 @@ class DebugGUIManager {
         .add(
           this.datObj,
           controlData.Id,
-          control.options.Min,
-          control.options.Max,
-          control.options.Step
+          control.getOptions().Min,
+          control.getOptions().Max,
+          control.getOptions().Step
         )
         .name(controlData.Name)
         .onChange(control.callback.bind(control));
@@ -135,7 +99,7 @@ class DebugGUIManager {
 
     if (controlData.Type == DebugGUIControlType.Dropdown) {
       gui
-        .add(this.datObj, controlData.Id, control.options.Values)
+        .add(this.datObj, controlData.Id, control.getOptions().Values)
         .name(controlData.Name)
         .onChange(control.callback.bind(control));
     }
@@ -145,18 +109,3 @@ class DebugGUIManager {
     for (let control of controlsData) this.addControl(control);
   }
 }
-
-const manager = new DebugGUIManager();
-
-window.vext = {
-  addControls: manager.addControls.bind(manager),
-};
-
-// TODO Remove it until i add a config option about it
-// document.body.addEventListener("click", (ev) => {
-//   if (ev.target !== document.body) return;
-//   resetMKB();
-
-//   if (!throttledCall) return;
-//   throttledCall("DispatchEvent", DebugGUICustomEvents.ResetMKB);
-// });
