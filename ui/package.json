@@ -12,6 +12,6 @@
     "rimraf": "3.0.2"
   },
   "devDependencies": {
-    "@types/dat.gui": "^0.7.6"
+    "@types/dat.gui": "0.7.6"
   }
 }
