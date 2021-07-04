@@ -29,13 +29,13 @@ export default class DebugGUIControl {
    *
    * @param value
    */
-  callback(value) {
+  callback(ev) {
     const payload: EventPayload = {
       id: this.id,
       isClient: this.isClient,
     };
 
-    if (value !== undefined) payload.value = value;
+    if (ev !== undefined && ev.value !== undefined) payload.value = ev.value;
 
     dispatchEvent(DebugGUICustomEvent.UIEvent, payload);
   }

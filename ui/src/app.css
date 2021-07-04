@@ -15,6 +15,14 @@ body {
   display: none;
 }
 
+#tweakpane-container {
+  position: fixed;
+  top: 0;
+  left: 20vh;
+  display: none;
+  min-width: 20vh;
+}
+
 pre#print-area {
   color: #fff;
   position: fixed;
