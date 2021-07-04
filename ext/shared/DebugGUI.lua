@@ -10,7 +10,10 @@ DebugGUIControlType = {
   Text = 3,
   Range = 4,
   Dropdown = 5,
-  Number = 6
+  Number = 6,
+  Vec2D = 7,
+  Vec3D = 8,
+  Vec4D = 9,
 }
 
 -- 
@@ -43,17 +46,25 @@ function DebugGUIControl:__init(_type, name, options, context, callback)
 end
 
 function DebugGUIControl:ExecuteCallback(value, player)
-  self.lastValue = value
+  self.lastValue = self:ConvertValue(value)
 
   if self.callback == nil then
     return
   end
 
   if self.context == nil then
-    self.callback(value, player)
+    self.callback(self.lastValue, player)
   else
-    self.callback(self.context, value, player)
+    self.callback(self.context, self.lastValue, player)
   end
+end
+
+function DebugGUIControl:ConvertValue(value)
+  if self.type == DebugGUIControlType.Vec2D then
+    return Vec2(value.x, value.y)
+  end
+
+  return value
 end
 
 function DebugGUIControl:Get()
@@ -279,6 +290,20 @@ function DebugGUI.static:Dropdown(name, options, context, callback)
     DebugGUIControlType.Dropdown,
     name,
     options,
+    context,
+    callback
+  )
+
+  return debugGUIManager:Add(control)
+end
+
+function DebugGUI.static:Vec2D(name, defValue, context, callback)
+  local control = DebugGUIControl(
+    DebugGUIControlType.Vec2D,
+    name,
+    {
+      DefValue = defValue
+    },
     context,
     callback
   )
