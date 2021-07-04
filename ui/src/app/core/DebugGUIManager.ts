@@ -146,6 +146,16 @@ export default class DebugGUIManager {
       .on('change', control.callback.bind(control));
   }
 
+  addVec2D(gui: GUI, control: DebugGUIControl) {
+    gui
+      .addInput(this.datObj, control.id, {
+        label: control.name
+      })
+      .on('change', control.callback.bind(control));
+
+    attachInputListener();
+  }
+
   /**
    *
    * @param controlData
@@ -178,6 +188,8 @@ export default class DebugGUIManager {
       this.addRange(gui, control);
     else if (controlData.Type == DebugGUIControlType.Dropdown)
       this.addDropdown(gui, control);
+    else if (controlData.Type == DebugGUIControlType.Vec2D)
+      this.addVec2D(gui, control);
   }
 
   /**

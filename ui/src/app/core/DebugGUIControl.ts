@@ -48,6 +48,12 @@ export default class DebugGUIControl {
     if (this.type === DebugGUIControlType.Button)
       return this.callback.bind(this);
 
+    // if (this.type === DebugGUIControlType.Vec2D) {
+    //   console.log('!!!')
+    //   console.log(this.options.DefValue)
+    //   return {x: 0, y: 0}
+    // }
+
     if (this.type === DebugGUIControlType.Text)
       return this.options.DefValue.toString();
 
