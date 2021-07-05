@@ -5,9 +5,9 @@ enum DebugGUIControlType {
   Range,
   Dropdown,
   Number,
-  Vec2D,
-  Vec3D,
-  Vec4D,
+  Vec2,
+  Vec3,
+  Vec4,
 }
 
 export default DebugGUIControlType;

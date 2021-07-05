@@ -11,9 +11,9 @@ DebugGUIControlType = {
   Range = 4,
   Dropdown = 5,
   Number = 6,
-  Vec2D = 7,
-  Vec3D = 8,
-  Vec4D = 9,
+  Vec2 = 7,
+  Vec3 = 8,
+  Vec4 = 9,
 }
 
 -- 
@@ -60,7 +60,7 @@ function DebugGUIControl:ExecuteCallback(value, player)
 end
 
 function DebugGUIControl:ConvertValue(value)
-  if self.type == DebugGUIControlType.Vec2D then
+  if self.type == DebugGUIControlType.Vec2 then
     return Vec2(value.x, value.y)
   end
 
@@ -297,18 +297,39 @@ function DebugGUI.static:Dropdown(name, options, context, callback)
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI.static:Vec2D(name, defValue, context, callback)
+function DebugGUI:Vector(name, options, context, callback)
   local control = DebugGUIControl(
-    DebugGUIControlType.Vec2D,
+    options.Type,
     name,
     {
-      DefValue = defValue
+      DefValue = options.DefValue
     },
     context,
     callback
   )
 
   return debugGUIManager:Add(control)
+end
+
+function DebugGUI.static:Vec2(name, defValue, context, callback)
+  return self:Vector(name, {
+    Type = DebugGUIControlType.Vec2,
+    DefValue = defValue or Vec2(0, 0)
+  }, context, callback)
+end
+
+function DebugGUI.static:Vec3(name, defValue, context, callback)
+  return self:Vector(name, {
+    Type = DebugGUIControlType.Vec3,
+    DefValue = defValue or Vec3(0, 0, 0)
+  }, context, callback)
+end
+
+function DebugGUI.static:Vec4(name, defValue, context, callback)
+  return self:Vector(name, {
+    Type = DebugGUIControlType.Vec4,
+    DefValue = defValue or Vec4(0, 0, 0, 0)
+  }, context, callback)
 end
 
 function DebugGUI.static:Print(str)
