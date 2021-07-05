@@ -1,9 +1,9 @@
 import DebugGUIControlType from "../enums/DebugGUIControlType";
 import DebugGUIControl from "./DebugGUIControl";
 import { enableKeyboard, resetKeyboard } from "./WebUI";
-import {Pane, FolderApi} from 'tweakpane'
+import { Pane, FolderApi } from "tweakpane";
 
-type GUI = Pane | FolderApi
+type GUI = Pane | FolderApi;
 
 function attachInputListener() {
   Array.from(document.querySelectorAll("input")).forEach((el) => {
@@ -22,7 +22,7 @@ export default class DebugGUIManager {
     // this.gui.domElement.id = "dat-gui";
 
     this.gui = new Pane({
-      container: document.getElementById('tweakpane-container')
+      container: document.getElementById("tweakpane-container"),
     });
 
     this.controls = [];
@@ -41,11 +41,9 @@ export default class DebugGUIManager {
     if (controlData.hasOwnProperty("Folder")) {
       // create folder if it doesn't exists
       if (!this.folders.hasOwnProperty(controlData.Folder)) {
-        this.folders[controlData.Folder] = this.gui.addFolder(
-          {
-            title: controlData.Folder
-          }
-        );
+        this.folders[controlData.Folder] = this.gui.addFolder({
+          title: controlData.Folder,
+        });
       }
 
       gui = this.folders[controlData.Folder];
@@ -60,9 +58,11 @@ export default class DebugGUIManager {
    * @param control
    */
   addButton(gui: GUI, control: DebugGUIControl) {
-    gui.addButton({
-      title: control.name
-    }).on('click', this.datObj[control.id])
+    gui
+      .addButton({
+        title: control.name,
+      })
+      .on("click", this.datObj[control.id]);
   }
 
   /**
@@ -73,9 +73,9 @@ export default class DebugGUIManager {
   addCheckbox(gui: GUI, control: DebugGUIControl) {
     gui
       .addInput(this.datObj, control.id, {
-        label: control.name
+        label: control.name,
       })
-      .on('change', control.callback.bind(control));
+      .on("change", control.callback.bind(control));
   }
 
   /**
@@ -86,9 +86,9 @@ export default class DebugGUIManager {
   addText(gui: GUI, control: DebugGUIControl) {
     gui
       .addInput(this.datObj, control.id, {
-        label: control.name
+        label: control.name,
       })
-      .on('change', control.callback.bind(control));
+      .on("change", control.callback.bind(control));
 
     attachInputListener();
   }
@@ -101,9 +101,9 @@ export default class DebugGUIManager {
   addNumber(gui: GUI, control: DebugGUIControl) {
     gui
       .addInput(this.datObj, control.id, {
-        label: control.name
+        label: control.name,
       })
-      .on('change', control.callback.bind(control));
+      .on("change", control.callback.bind(control));
 
     attachInputListener();
   }
@@ -119,9 +119,9 @@ export default class DebugGUIManager {
         label: control.name,
         min: control.options.Min,
         max: control.options.Max,
-        step: control.options.Step
+        step: control.options.Step,
       })
-      .on('change', control.callback.bind(control));
+      .on("change", control.callback.bind(control));
 
     attachInputListener();
   }
@@ -134,24 +134,24 @@ export default class DebugGUIManager {
   addDropdown(gui: GUI, control: DebugGUIControl) {
     // convert array to map
     const options = control.options.Values.reduce((acc, curr) => {
-      acc[curr] = curr
-      return acc
-    }, {})
+      acc[curr] = curr;
+      return acc;
+    }, {});
 
     gui
       .addInput(this.datObj, control.id, {
         label: control.name,
-        options
+        options,
       })
-      .on('change', control.callback.bind(control));
+      .on("change", control.callback.bind(control));
   }
 
-  addVec2D(gui: GUI, control: DebugGUIControl) {
+  addVec2(gui: GUI, control: DebugGUIControl) {
     gui
       .addInput(this.datObj, control.id, {
-        label: control.name
+        label: control.name,
       })
-      .on('change', control.callback.bind(control));
+      .on("change", control.callback.bind(control));
 
     attachInputListener();
   }
@@ -167,7 +167,8 @@ export default class DebugGUIManager {
 
     // show dat.gui controls
     // if (this.controls.length === 0) this.gui.domElement.style.display = "block";
-    if (this.controls.length !== 0) document.getElementById('tweakpane-container').style.display = 'block'
+    if (this.controls.length !== 0)
+      document.getElementById("tweakpane-container").style.display = "block";
 
     const gui = this.resolveGUI(controlData);
 
@@ -188,8 +189,8 @@ export default class DebugGUIManager {
       this.addRange(gui, control);
     else if (controlData.Type == DebugGUIControlType.Dropdown)
       this.addDropdown(gui, control);
-    else if (controlData.Type == DebugGUIControlType.Vec2D)
-      this.addVec2D(gui, control);
+    else if (controlData.Type == DebugGUIControlType.Vec2)
+      this.addVec2(gui, control);
   }
 
   /**
