@@ -62,6 +62,10 @@ end
 function DebugGUIControl:ConvertValue(value)
   if self.type == DebugGUIControlType.Vec2 then
     return Vec2(value.x, value.y)
+  elseif self.type == DebugGUIControlType.Vec3 then
+    return Vec3(value.x, value.y, value.z)
+  elseif self.type == DebugGUIControlType.Vec4 then
+    return Vec4(value.x, value.y, value.z, value.w)
   end
 
   return value

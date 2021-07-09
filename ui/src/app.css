@@ -35,8 +35,13 @@ body {
 #tweakpane-container {
   position: fixed;
   top: 0;
+  height: 100vh;
+  bottom: 0;
   right: 10vh;
-  display: none;
+  display: 'none';
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
   min-width: 25vh;
 }
 

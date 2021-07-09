@@ -146,7 +146,7 @@ export default class DebugGUIManager {
       .on("change", control.callback.bind(control));
   }
 
-  addVec2(gui: GUI, control: DebugGUIControl) {
+  addVector(gui: GUI, control: DebugGUIControl) {
     gui
       .addInput(this.datObj, control.id, {
         label: control.name,
@@ -166,9 +166,9 @@ export default class DebugGUIManager {
     if (controlData.Id in this.datObj) return;
 
     // show dat.gui controls
-    // if (this.controls.length === 0) this.gui.domElement.style.display = "block";
+    // if (this.controls.length === 0) this.gui.domElement.style.display = "flex";
     if (this.controls.length !== 0)
-      document.getElementById("tweakpane-container").style.display = "block";
+      document.getElementById("tweakpane-container").style.display = "flex";
 
     const gui = this.resolveGUI(controlData);
 
@@ -177,20 +177,24 @@ export default class DebugGUIManager {
     this.controls.push(control);
     this.datObj[control.id] = control.createObjValue();
 
-    if (controlData.Type === DebugGUIControlType.Button)
-      this.addButton(gui, control);
-    else if (controlData.Type === DebugGUIControlType.Checkbox)
+    const type = controlData.Type;
+
+    if (type === DebugGUIControlType.Button) this.addButton(gui, control);
+    else if (type === DebugGUIControlType.Checkbox)
       this.addCheckbox(gui, control);
-    else if (controlData.Type === DebugGUIControlType.Text)
-      this.addText(gui, control);
-    else if (controlData.Type == DebugGUIControlType.Number)
-      this.addNumber(gui, control);
-    else if (controlData.Type == DebugGUIControlType.Range)
-      this.addRange(gui, control);
-    else if (controlData.Type == DebugGUIControlType.Dropdown)
+    else if (type === DebugGUIControlType.Text) this.addText(gui, control);
+    else if (type == DebugGUIControlType.Number) this.addNumber(gui, control);
+    else if (type == DebugGUIControlType.Range) this.addRange(gui, control);
+    else if (type == DebugGUIControlType.Dropdown)
       this.addDropdown(gui, control);
-    else if (controlData.Type == DebugGUIControlType.Vec2)
-      this.addVec2(gui, control);
+    else if (
+      [
+        DebugGUIControlType.Vec2,
+        DebugGUIControlType.Vec3,
+        DebugGUIControlType.Vec4,
+      ].includes(type)
+    )
+      this.addVector(gui, control);
   }
 
   /**
