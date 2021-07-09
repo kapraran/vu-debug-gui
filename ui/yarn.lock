@@ -960,7 +960,7 @@
     "@parcel/utils" "^1.11.0"
     physical-cpu-count "^2.0.0"
 
-"@tweakpane/core@^1.0.3":
+"@tweakpane/core@1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@tweakpane/core/-/core-1.0.3.tgz#3f80e2203e3bcc6baf9502015e43a5aac4b05d30"
   integrity sha512-uqPGCUR5a1bEvSV1bUrgeDmd3AL9Y6ZpL9rxMa8KJqymyDMOlAKF6UJUa+k4r4y6EOfF2CUygzxFOgZxrPL43A==
@@ -3641,7 +3641,7 @@ pako@~1.0.5:
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
 
-parcel-bundler@^1.12.5:
+parcel-bundler@1.12.5:
   version "1.12.5"
   resolved "https://registry.yarnpkg.com/parcel-bundler/-/parcel-bundler-1.12.5.tgz#91f7de1c1fbfe5111616d3211c749c85c4d8acf0"
   integrity sha512-hpku8mW67U6PXQIenW6NBbphBOMb8XzW6B9r093DUhYj5GN2FUB/CXCiz5hKoPYUsusZ35BpProH8AUF9bh5IQ==
@@ -5031,7 +5031,7 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
-tweakpane@^3.0.2:
+tweakpane@3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/tweakpane/-/tweakpane-3.0.2.tgz#d6234ab3ed4ba4d29ac139ef8d527585bc2b5cb1"
   integrity sha512-SCiK3S466ElC8Uws0BgO69I5rcpY+0JgPzxpwn0nn7yGHeqEjCHsu7Qvd/L7wJPUaUY13PIEniJeV99ff8oy6Q==
@@ -5053,7 +5053,7 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^4.3.5:
+typescript@4.3.5:
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
   integrity sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==
