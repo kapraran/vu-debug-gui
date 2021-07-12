@@ -16,6 +16,28 @@ DebugGUIControlType = {
   Vec4 = 9,
 }
 
+function SetDefaultNumOpts(numOpts, skipDefault)
+  numOpts.Min = (numOpts.Min ~= nil and numOpts.Min) or 0
+  numOpts.Max = (numOpts.Max ~= nil and numOpts.Max) or 1
+  numOpts.Step = numOpts.Step
+
+  if not skipDefault then
+    numOpts.DefValue = numOpts.DefValue or numOpts.Min
+  end
+
+  return numOpts
+end
+
+function resolveVecOpts(options, defVector)
+  if options == nil then
+    return {defValue = defVector}
+  elseif type(options.x) == 'number' then
+    return {defValue = options}
+  else
+    return options
+  end
+end
+
 -- 
 -- DebugGUIControl
 -- 
@@ -267,10 +289,7 @@ function DebugGUI.static:Range(name, options, context, callback)
   options = options or {}
 
   -- defaults
-  options.Min = (options.Min ~= nil and options.Min) or 0
-  options.Max = (options.Max ~= nil and options.Max) or 100
-  options.Step = (options.Step ~= nil and options.Step) or 1
-  options.DefValue = options.DefValue or options.Min
+  options = SetDefaultNumOpts(options)
 
   local control = DebugGUIControl(
     DebugGUIControlType.Range,
@@ -302,6 +321,18 @@ function DebugGUI.static:Dropdown(name, options, context, callback)
 end
 
 function DebugGUI:Vector(name, options, context, callback)
+  local vector = options.DefValue
+
+  -- defaults
+  options.x = SetDefaultNumOpts(options.x, true)
+  options.y = SetDefaultNumOpts(options.y, true)
+
+  if not options.Type == DebugGUIControlType.Vec2 then
+    options.z = SetDefaultNumOpts(options.z, true)
+  elseif not options.Type == DebugGUIControlType.Vec3 then
+    options.w = SetDefaultNumOpts(options.w, true)
+  end
+
   local control = DebugGUIControl(
     options.Type,
     name,
@@ -315,25 +346,25 @@ function DebugGUI:Vector(name, options, context, callback)
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI.static:Vec2(name, defValue, context, callback)
-  return self:Vector(name, {
-    Type = DebugGUIControlType.Vec2,
-    DefValue = defValue or Vec2(0, 0)
-  }, context, callback)
+function DebugGUI.static:Vec2(name, options, context, callback)
+  local options = resolveVecOpts(options, Vec2(0, 0))
+  options.Type = DebugGUIControlType.Vec2
+
+  return self:Vector(name, options, context, callback)
 end
 
-function DebugGUI.static:Vec3(name, defValue, context, callback)
-  return self:Vector(name, {
-    Type = DebugGUIControlType.Vec3,
-    DefValue = defValue or Vec3(0, 0, 0)
-  }, context, callback)
+function DebugGUI.static:Vec3(name, options, context, callback)
+  local options = resolveVecOpts(options, Vec3(0, 0, 0))
+  options.Type = DebugGUIControlType.Vec3
+
+  return self:Vector(name, options, context, callback)
 end
 
-function DebugGUI.static:Vec4(name, defValue, context, callback)
-  return self:Vector(name, {
-    Type = DebugGUIControlType.Vec4,
-    DefValue = defValue or Vec4(0, 0, 0, 0)
-  }, context, callback)
+function DebugGUI.static:Vec4(name, options, context, callback)
+  local options = resolveVecOpts(options, Vec4(0, 0, 0, 0))
+  options.Type = DebugGUIControlType.Vec4
+
+  return self:Vector(name, options, context, callback)
 end
 
 function DebugGUI.static:Print(str)

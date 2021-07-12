@@ -1,5 +1,5 @@
 import DebugGUIControlType from "../enums/DebugGUIControlType";
-import DebugGUIControl from "./DebugGUIControl";
+import DebugGUIControl, { ControlOptionsType, VectorOptionsType } from "./DebugGUIControl";
 import { enableKeyboard, resetKeyboard } from "./WebUI";
 import { Pane, FolderApi } from "tweakpane";
 
@@ -10,6 +10,15 @@ function attachInputListener() {
     el.addEventListener("focus", enableKeyboard);
     el.addEventListener("blur", resetKeyboard);
   });
+}
+
+function toLowerCaseProps(obj: Record<string, any>) {
+  if (!obj) return undefined;
+
+  return Object.keys(obj).reduce((newObj, key) => {
+    newObj[key.toLowerCase()] = obj[key];
+    return newObj;
+  }, {});
 }
 
 export default class DebugGUIManager {
@@ -114,12 +123,14 @@ export default class DebugGUIManager {
    * @param control
    */
   addRange(gui: GUI, control: DebugGUIControl) {
+    const options = control.options as ControlOptionsType
+
     gui
       .addInput(this.datObj, control.id, {
         label: control.name,
-        min: control.options.Min,
-        max: control.options.Max,
-        step: control.options.Step,
+        min: options.Min,
+        max: options.Max,
+        step: options.Step,
       })
       .on("change", control.callback.bind(control));
 
@@ -147,10 +158,20 @@ export default class DebugGUIManager {
   }
 
   addVector(gui: GUI, control: DebugGUIControl) {
+    const options = control.options as VectorOptionsType;
+
+    const lowerCaseOpts = {
+      label: control.name,
+      x: toLowerCaseProps(options["x"]),
+      y: toLowerCaseProps(options["y"]),
+      z: toLowerCaseProps(options["z"]),
+      w: toLowerCaseProps(options["w"]),
+    };
+
+    console.log(lowerCaseOpts)
+
     gui
-      .addInput(this.datObj, control.id, {
-        label: control.name,
-      })
+      .addInput(this.datObj, control.id, lowerCaseOpts)
       .on("change", control.callback.bind(control));
 
     attachInputListener();

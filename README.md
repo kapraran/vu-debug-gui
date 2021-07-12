@@ -15,7 +15,7 @@ DebugGUI:Button("Next Round", function()
 end)
 
 -- A folder that groups player related controls
-DebugGUI:Folder("Player", function ()
+DebugGUI:Folder("Player", function()
   -- A button to kill the local player
   DebugGUI:Button("Suicide", function(value, player)
     if player ~= nil and player.soldier ~= nil then
@@ -47,31 +47,36 @@ Press `F1` to toggle the mouse/keyboard (you can change the key in the config).
 
 ## Supported Controls
 
-There's a number of available controls to use, based on what dat.GUI has to offer.
+There's a number of available controls to use, based on what tweakpane has to offer.
 
 In every case, the callback has the `value` as the first argument. If the control was created in a server script, the `player` who triggers it is passed as the second argument.
 
 ### Button
+
 ```
 DebugGUI:Button(name, [context,] callback)
 ```
 
 ### Checkbox
+
 ```
 DebugGUI:Checkbox(name, defValue, [context,] callback)
 ```
 
 ### Text
+
 ```
 DebugGUI:Text(name, defValue, [context,] callback)
 ```
 
 ### Number
+
 ```
 DebugGUI:Number(name, defValue, [context,] callback)
 ```
 
 ### Range
+
 ```
 DebugGUI:Range(name, options, [context,] callback)
 
@@ -84,8 +89,94 @@ options = {
 
 ```
 
+### Vec2
+
+```
+DebugGUI:Vec2(name, options, [context,] callback)
+
+options = Vec2 | OptionsType
+
+OptionsType = {
+  DefValue
+  x: {
+    Min (0)
+    Max (1)
+    Step
+  }
+  y: {
+    Min (0)
+    Max (1)
+    Step
+  }
+}
+
+```
+
+### Vec3
+
+```
+DebugGUI:Vec3(name, options, [context,] callback)
+
+options = Vec3 | OptionsType
+
+OptionsType = {
+  DefValue
+  x: {
+    Min (0)
+    Max (1)
+    Step
+  }
+  y: {
+    Min (0)
+    Max (1)
+    Step
+  }
+  z: {
+    Min (0)
+    Max (1)
+    Step
+  }
+}
+
+```
+
+### Vec4
+
+```
+DebugGUI:Vec4(name, options, [context,] callback)
+
+options = Vec4 | OptionsType
+
+OptionsType = {
+  DefValue
+  x: {
+    Min (0)
+    Max (1)
+    Step
+  }
+  y: {
+    Min (0)
+    Max (1)
+    Step
+  }
+  z: {
+    Min (0)
+    Max (1)
+    Step
+  }
+  w: {
+    Min (0)
+    Max (1)
+    Step
+  }
+}
+
+```
+
 ### Dropdown
+
 ! Unfortunately, native dropdowns don't work as expected in VU
+
 ```
 DebugGUI:Dropdown(name, options, [context,] callback)
 
@@ -97,9 +188,9 @@ options = {
 
 ## Notice
 
-* There's no automatic syncing between clients. It's up to the mod developer to sync those changes.
+- There's no automatic syncing between clients. It's up to the mod developer to sync those changes.
 
-* You can't update the control's value from lua after it's creation, for now.
+- You can't update the control's value from lua after it's creation, for now.
 
 ## License
 
