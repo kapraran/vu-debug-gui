@@ -2,7 +2,7 @@ import DebugGUIControlType from "../enums/DebugGUIControlType";
 import DebugGUICustomEvent from "../enums/DebugGUICustomEvent";
 import { EventPayload, dispatchEvent } from "./WebUI";
 
-type ControlOptions = {
+export type ControlOptionsType = {
   DefValue: any;
   Min: number;
   Max: number;
@@ -10,11 +10,19 @@ type ControlOptions = {
   Values: any[];
 };
 
+export type VectorOptionsType = {
+  DefValue: any;
+  x: { Min: number; Max: number; Step?: number };
+  y: { Min: number; Max: number; Step?: number };
+  z?: { Min: number; Max: number; Step?: number };
+  w?: { Min: number; Max: number; Step?: number };
+};
+
 export default class DebugGUIControl {
   readonly id: string;
   readonly type: number;
   readonly name: string;
-  readonly options: ControlOptions;
+  readonly options: ControlOptionsType | VectorOptionsType;
   readonly isClient: boolean;
 
   constructor(controlData) {
@@ -47,12 +55,6 @@ export default class DebugGUIControl {
   createObjValue() {
     if (this.type === DebugGUIControlType.Button)
       return this.callback.bind(this);
-
-    // if (this.type === DebugGUIControlType.Vec2) {
-    //   console.log('!!!')
-    //   console.log(this.options.DefValue)
-    //   return {x: 0, y: 0}
-    // }
 
     if (this.type === DebugGUIControlType.Text)
       return this.options.DefValue.toString();
