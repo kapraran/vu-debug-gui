@@ -31,6 +31,7 @@ export default class DebugGUIManager {
     // this.gui.domElement.id = "dat-gui";
 
     this.gui = new Pane({
+      title: 'DebugGUI',
       container: document.getElementById("tweakpane-container"),
     });
 
