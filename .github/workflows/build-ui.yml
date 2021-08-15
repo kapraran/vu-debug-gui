@@ -1,0 +1,51 @@
+name: build-ui
+on: [push]
+
+jobs:
+  build-ui: 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - name: install apt-fast
+        run: |
+          add-apt-repository ppa:apt-fast/stable -y
+          apt-get update
+          apt-get -y install apt-fast
+      # - name: download wine & vuicc
+      #   run: |
+      #     dpkg --add-architecture i386
+      #     apt-get update
+      #     apt-get install -y wget gnupg software-properties-common libncurses5:i386
+      #     wget -qO- https://dl.winehq.org/wine-builds/Release.key | apt-key add -
+      #     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv F987672F
+      #     apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
+      #     apt-get update
+      #     apt-get install -y --install-recommends winehq-stable
+      #     wget https://veniceunleashed.net/files/vuicc.exe
+      - name: download wine & vuicc
+        run: |
+          dpkg --add-architecture i386
+          wget -nc https://dl.winehq.org/wine-builds/winehq.key
+          gpg -o /etc/apt/trusted.gpg.d/winehq.key.gpg --dearmor winehq.key
+          add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main'
+          apt-fast update
+          apt-fast install -y --install-recommends winehq-stable
+      - name: install yarn
+        run: npm install --global yarn
+      - name: install vuicc
+        working-directory: ./ui
+        run: wget https://veniceunleashed.net/files/vuicc.exe
+      - name: install npm dependencies
+        working-directory: ./ui
+        run: yarn
+      - name: build ui.vuic
+        working-directory: ./ui
+        run: |
+          yarn build:parcel
+          WINEDEBUG=-all wine vuicc.exe dist ui.vuic
+      - name: publish ui.vuic
+        uses: actions/upload-artifact@v2
+        with:
+          name: ui.vuic
+          path: ui/ui.vuic
