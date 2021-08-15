@@ -9,9 +9,9 @@ jobs:
       - uses: actions/setup-node@v2
       - name: install apt-fast
         run: |
-          add-apt-repository ppa:apt-fast/stable -y
-          apt-get update
-          apt-get -y install apt-fast
+          sudo add-apt-repository ppa:apt-fast/stable -y
+          sudo apt-get update
+          sudo apt-get -y install apt-fast
       # - name: download wine & vuicc
       #   run: |
       #     dpkg --add-architecture i386
@@ -25,12 +25,12 @@ jobs:
       #     wget https://veniceunleashed.net/files/vuicc.exe
       - name: download wine & vuicc
         run: |
-          dpkg --add-architecture i386
-          wget -nc https://dl.winehq.org/wine-builds/winehq.key
-          gpg -o /etc/apt/trusted.gpg.d/winehq.key.gpg --dearmor winehq.key
-          add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main'
-          apt-fast update
-          apt-fast install -y --install-recommends winehq-stable
+          sudo dpkg --add-architecture i386
+          sudo wget -nc https://dl.winehq.org/wine-builds/winehq.key
+          sudo gpg -o /etc/apt/trusted.gpg.d/winehq.key.gpg --dearmor winehq.key
+          sudo add-apt-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main'
+          sudo apt-fast update
+          sudo apt-fast install -y --install-recommends winehq-stable
       - name: install yarn
         run: npm install --global yarn
       - name: install vuicc
