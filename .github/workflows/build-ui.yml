@@ -12,18 +12,7 @@ jobs:
           sudo add-apt-repository ppa:apt-fast/stable -y
           sudo apt-get update
           sudo apt-get -y install apt-fast
-      # - name: download wine & vuicc
-      #   run: |
-      #     dpkg --add-architecture i386
-      #     apt-get update
-      #     apt-get install -y wget gnupg software-properties-common libncurses5:i386
-      #     wget -qO- https://dl.winehq.org/wine-builds/Release.key | apt-key add -
-      #     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv F987672F
-      #     apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
-      #     apt-get update
-      #     apt-get install -y --install-recommends winehq-stable
-      #     wget https://veniceunleashed.net/files/vuicc.exe
-      - name: download wine & vuicc
+      - name: download wine
         run: |
           sudo dpkg --add-architecture i386
           sudo wget -nc https://dl.winehq.org/wine-builds/winehq.key
