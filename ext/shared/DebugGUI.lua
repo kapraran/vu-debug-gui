@@ -31,9 +31,9 @@ end
 
 function resolveVecOpts(options, defVector)
   if options == nil then
-    return {defValue = defVector}
+    return {DefValue = defVector}
   elseif type(options.x) == 'number' then
-    return {defValue = options}
+    return {DefValue = options}
   else
     return options
   end
@@ -354,9 +354,7 @@ function DebugGUI:Vector(name, options, context, callback)
   local control = DebugGUIControl(
     options.Type,
     name,
-    {
-      DefValue = options.DefValue
-    },
+    options,
     context,
     callback
   )

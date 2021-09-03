@@ -173,6 +173,13 @@ export default class DebugGUIManager {
       w: toLowerCaseProps(options["w"]),
     };
 
+    if (control.type === DebugGUIControlType.Vec2) {
+      delete lowerCaseOpts.z
+      delete lowerCaseOpts.w
+    } else if (control.type === DebugGUIControlType.Vec3) {
+      delete lowerCaseOpts.w
+    }
+
     gui
       .addInput(this.datObj, control.id, lowerCaseOpts)
       .on("change", control.callback.bind(control));
