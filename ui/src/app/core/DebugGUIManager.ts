@@ -232,7 +232,7 @@ export default class DebugGUIManager {
    * @returns
    */
   isHidden() {
-    return this.container.style.display === "none";
+    return window.getComputedStyle(this.container, null).display === "none";
   }
 
   /**
