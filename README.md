@@ -186,6 +186,15 @@ options = {
 }
 ```
 
+### Toggle UI
+
+You can show and hide the UI on demand by calling these methods
+```lua
+DebugGUI:ShowUI()
+
+DebugGUI:HideUI()
+```
+
 ## Notice
 
 - There's no automatic syncing between clients. It's up to the mod developer to sync those changes.

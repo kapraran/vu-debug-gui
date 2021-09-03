@@ -1,5 +1,8 @@
 import DebugGUIControlType from "../enums/DebugGUIControlType";
-import DebugGUIControl, { ControlOptionsType, VectorOptionsType } from "./DebugGUIControl";
+import DebugGUIControl, {
+  ControlOptionsType,
+  VectorOptionsType,
+} from "./DebugGUIControl";
 import { enableKeyboard, resetKeyboard } from "./WebUI";
 import { Pane, FolderApi } from "tweakpane";
 
@@ -26,13 +29,14 @@ export default class DebugGUIManager {
   private controls: DebugGUIControl[];
   private folders: { [name: string]: GUI };
   private datObj: { [name: string]: any };
+  private container: HTMLElement;
 
   constructor() {
-    // this.gui.domElement.id = "dat-gui";
+    this.container = document.getElementById("tweakpane-container");
 
     this.gui = new Pane({
-      title: 'DebugGUI',
-      container: document.getElementById("tweakpane-container"),
+      title: "DebugGUI",
+      container: this.container,
     });
 
     this.controls = [];
@@ -124,7 +128,7 @@ export default class DebugGUIManager {
    * @param control
    */
   addRange(gui: GUI, control: DebugGUIControl) {
-    const options = control.options as ControlOptionsType
+    const options = control.options as ControlOptionsType;
 
     gui
       .addInput(this.datObj, control.id, {
@@ -169,8 +173,6 @@ export default class DebugGUIManager {
       w: toLowerCaseProps(options["w"]),
     };
 
-    console.log(lowerCaseOpts)
-
     gui
       .addInput(this.datObj, control.id, lowerCaseOpts)
       .on("change", control.callback.bind(control));
@@ -188,9 +190,7 @@ export default class DebugGUIManager {
     if (controlData.Id in this.datObj) return;
 
     // show dat.gui controls
-    // if (this.controls.length === 0) this.gui.domElement.style.display = "flex";
-    if (this.controls.length !== 0)
-      document.getElementById("tweakpane-container").style.display = "flex";
+    // if (this.controls.length !== 0) this.showUI();
 
     const gui = this.resolveGUI(controlData);
 
@@ -225,5 +225,27 @@ export default class DebugGUIManager {
    */
   addControls(controlsData) {
     for (let control of controlsData) this.addControl(control);
+  }
+
+  /**
+   *
+   * @returns
+   */
+  isHidden() {
+    return this.container.style.display === "none";
+  }
+
+  /**
+   *
+   */
+  showUI() {
+    if (this.isHidden()) this.container.style.display = "flex";
+  }
+
+  /**
+   *
+   */
+  hideUI() {
+    if (!this.isHidden()) this.container.style.display = "none";
   }
 }
