@@ -9,7 +9,7 @@
     "@tweakpane/core": "1.0.3",
     "lodash.throttle": "4.1.1",
     "parcel-bundler": "1.12.5",
-    "rimraf": "3.0.2",
+    "rimraf": "4.4.1",
     "tweakpane": "3.0.2"
   },
   "devDependencies": {
