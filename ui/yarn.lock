@@ -960,10 +960,10 @@
     "@parcel/utils" "^1.11.0"
     physical-cpu-count "^2.0.0"
 
-"@tweakpane/core@1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@tweakpane/core/-/core-1.0.3.tgz#3f80e2203e3bcc6baf9502015e43a5aac4b05d30"
-  integrity sha512-uqPGCUR5a1bEvSV1bUrgeDmd3AL9Y6ZpL9rxMa8KJqymyDMOlAKF6UJUa+k4r4y6EOfF2CUygzxFOgZxrPL43A==
+"@tweakpane/core@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@tweakpane/core/-/core-2.0.3.tgz#9ac511d1f73d3bcb61b8ddc47b09a6b2e9dfdd53"
+  integrity sha512-qHci4XA1Wngpwy8IzsLh5JEdscz8aDti/9YhyOaq01si+cgNDaZfwzTtXdn1+xTxSnCM+pW4Zb2/4eqn+K1ATw==
 
 "@types/q@^1.5.1":
   version "1.5.4"
