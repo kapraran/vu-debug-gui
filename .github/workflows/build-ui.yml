@@ -34,7 +34,7 @@ jobs:
           yarn build:parcel
           WINEDEBUG=-all wine vuicc.exe dist ui.vuic
       - name: publish ui.vuic
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ui.vuic
           path: ui/ui.vuic
