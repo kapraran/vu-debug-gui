@@ -13,6 +13,6 @@
     "tweakpane": "3.0.2"
   },
   "devDependencies": {
-    "typescript": "4.3.5"
+    "typescript": "5.4.5"
   }
 }
