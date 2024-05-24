@@ -977,10 +977,10 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@tweakpane/core@1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@tweakpane/core/-/core-1.0.3.tgz#3f80e2203e3bcc6baf9502015e43a5aac4b05d30"
-  integrity sha512-uqPGCUR5a1bEvSV1bUrgeDmd3AL9Y6ZpL9rxMa8KJqymyDMOlAKF6UJUa+k4r4y6EOfF2CUygzxFOgZxrPL43A==
+"@tweakpane/core@1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@tweakpane/core/-/core-1.1.9.tgz#29d54fea38a489e140958616088f9d09d3c04379"
+  integrity sha512-9tq+KAhaqPiOgsFyLPAz1IMXkVfhRqxGzAgy1ps3As6o3W7XjnU7sev6OlD/Z+Pzw8uZVMukkSHf2e0uCU6u0A==
 
 "@types/q@^1.5.1":
   version "1.5.4"
