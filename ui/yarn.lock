@@ -5236,10 +5236,10 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
-tweakpane@3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/tweakpane/-/tweakpane-3.0.2.tgz#d6234ab3ed4ba4d29ac139ef8d527585bc2b5cb1"
-  integrity sha512-SCiK3S466ElC8Uws0BgO69I5rcpY+0JgPzxpwn0nn7yGHeqEjCHsu7Qvd/L7wJPUaUY13PIEniJeV99ff8oy6Q==
+tweakpane@4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/tweakpane/-/tweakpane-4.0.4.tgz#db55a54721872b10a698fbf900506d8f4d4840d0"
+  integrity sha512-RkWD54zDlEbnN01wQPk0ANHGbdCvlJx/E8A1QxhTfCbX+ROWos1Ws2MnhOm39aUGMOh+36TjUwpDmLfmwTr1Fg==
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
