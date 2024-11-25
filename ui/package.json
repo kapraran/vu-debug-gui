@@ -10,7 +10,7 @@
     "lodash.throttle": "4.1.1",
     "parcel-bundler": "1.12.5",
     "rimraf": "5.0.10",
-    "tweakpane": "3.0.2"
+    "tweakpane": "4.0.5"
   },
   "devDependencies": {
     "typescript": "5.4.5"
