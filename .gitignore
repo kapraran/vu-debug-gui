@@ -2,7 +2,4 @@ node_modules
 *.code-workspace
 ui.vuic
 
-.cache
-.parcel-cache
 .vu
-dist
