@@ -1,6 +1,7 @@
 import DebugGUIControlType from "../enums/DebugGUIControlType";
 import DebugGUICustomEvent from "../enums/DebugGUICustomEvent";
-import { EventPayload, dispatchEvent } from "./WebUI";
+import type { EventPayload } from "./WebUI";
+import { dispatchEvent } from "./WebUI";
 
 export type ControlOptionsType = {
   DefValue: any;
@@ -25,7 +26,7 @@ export default class DebugGUIControl {
   readonly options: ControlOptionsType | VectorOptionsType;
   readonly isClient: boolean;
 
-  constructor(controlData) {
+  constructor(controlData: Record<string, any>) {
     this.id = controlData.Id;
     this.type = controlData.Type;
     this.name = controlData.Name;
@@ -33,11 +34,7 @@ export default class DebugGUIControl {
     this.isClient = controlData.IsClient;
   }
 
-  /**
-   *
-   * @param value
-   */
-  callback(ev) {
+  callback(ev: { value?: any }) {
     const payload: EventPayload = {
       id: this.id,
       isClient: this.isClient,
@@ -48,10 +45,6 @@ export default class DebugGUIControl {
     dispatchEvent(DebugGUICustomEvent.UIEvent, payload);
   }
 
-  /**
-   *
-   * @returns
-   */
   createObjValue() {
     if (this.type === DebugGUIControlType.Button)
       return this.callback.bind(this);

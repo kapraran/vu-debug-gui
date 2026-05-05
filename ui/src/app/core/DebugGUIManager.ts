@@ -1,8 +1,5 @@
 import DebugGUIControlType from "../enums/DebugGUIControlType";
-import DebugGUIControl, {
-  ControlOptionsType,
-  VectorOptionsType,
-} from "./DebugGUIControl";
+import DebugGUIControl from "./DebugGUIControl";
 import { enableKeyboard, resetKeyboard } from "./WebUI";
 import { Pane, FolderApi } from "tweakpane";
 
@@ -15,13 +12,13 @@ function attachInputListener() {
   });
 }
 
-function toLowerCaseProps(obj: Record<string, any>) {
+function toLowerCaseProps(obj: Record<string, any> | undefined) {
   if (!obj) return undefined;
 
   return Object.keys(obj).reduce((newObj, key) => {
     newObj[key.toLowerCase()] = obj[key];
     return newObj;
-  }, {});
+  }, {} as Record<string, any>);
 }
 
 export default class DebugGUIManager {
@@ -32,7 +29,7 @@ export default class DebugGUIManager {
   private container: HTMLElement;
 
   constructor() {
-    this.container = document.getElementById("tweakpane-container");
+    this.container = document.getElementById("tweakpane-container")!;
 
     this.gui = new Pane({
       title: "DebugGUI",
@@ -44,16 +41,10 @@ export default class DebugGUIManager {
     this.datObj = {};
   }
 
-  /**
-   *
-   * @param controlData
-   * @returns
-   */
-  resolveGUI(controlData) {
+  resolveGUI(controlData: Record<string, any>) {
     let gui = this.gui;
 
     if (controlData.hasOwnProperty("Folder")) {
-      // create folder if it doesn't exists
       if (!this.folders.hasOwnProperty(controlData.Folder)) {
         this.folders[controlData.Folder] = this.gui.addFolder({
           title: controlData.Folder,
@@ -66,11 +57,6 @@ export default class DebugGUIManager {
     return gui;
   }
 
-  /**
-   *
-   * @param gui
-   * @param control
-   */
   addButton(gui: GUI, control: DebugGUIControl) {
     gui
       .addButton({
@@ -79,11 +65,6 @@ export default class DebugGUIManager {
       .on("click", this.datObj[control.id]);
   }
 
-  /**
-   *
-   * @param gui
-   * @param control
-   */
   addCheckbox(gui: GUI, control: DebugGUIControl) {
     gui
       .addInput(this.datObj, control.id, {
@@ -92,11 +73,6 @@ export default class DebugGUIManager {
       .on("change", control.callback.bind(control));
   }
 
-  /**
-   *
-   * @param gui
-   * @param control
-   */
   addText(gui: GUI, control: DebugGUIControl) {
     gui
       .addInput(this.datObj, control.id, {
@@ -107,11 +83,6 @@ export default class DebugGUIManager {
     attachInputListener();
   }
 
-  /**
-   *
-   * @param gui
-   * @param control
-   */
   addNumber(gui: GUI, control: DebugGUIControl) {
     gui
       .addInput(this.datObj, control.id, {
@@ -122,37 +93,32 @@ export default class DebugGUIManager {
     attachInputListener();
   }
 
-  /**
-   *
-   * @param gui
-   * @param control
-   */
   addRange(gui: GUI, control: DebugGUIControl) {
-    const options = control.options as ControlOptionsType;
+    if (!('Min' in control.options)) {
+      throw new Error('Range control requires Min option');
+    }
 
     gui
       .addInput(this.datObj, control.id, {
         label: control.name,
-        min: options.Min,
-        max: options.Max,
-        step: options.Step,
+        min: control.options.Min,
+        max: control.options.Max,
+        step: control.options.Step,
       })
       .on("change", control.callback.bind(control));
 
     attachInputListener();
   }
 
-  /**
-   *
-   * @param gui
-   * @param control
-   */
   addDropdown(gui: GUI, control: DebugGUIControl) {
-    // convert array to map
-    const options = control.options.Values.reduce((acc, curr) => {
+    if (!('Values' in control.options)) {
+      throw new Error('Dropdown control requires Values option');
+    }
+
+    const options = control.options.Values.reduce((acc: Record<string, any>, curr: any) => {
       acc[curr] = curr;
       return acc;
-    }, {});
+    }, {} as Record<string, any>);
 
     gui
       .addInput(this.datObj, control.id, {
@@ -163,21 +129,23 @@ export default class DebugGUIManager {
   }
 
   addVector(gui: GUI, control: DebugGUIControl) {
-    const options = control.options as VectorOptionsType;
+    if (!('x' in control.options)) {
+      throw new Error('Vector control requires x option');
+    }
 
-    const lowerCaseOpts = {
+    const lowerCaseOpts: Record<string, any> = {
       label: control.name,
-      x: toLowerCaseProps(options["x"]),
-      y: toLowerCaseProps(options["y"]),
-      z: toLowerCaseProps(options["z"]),
-      w: toLowerCaseProps(options["w"]),
+      x: toLowerCaseProps(control.options.x),
+      y: toLowerCaseProps(control.options.y),
+      z: toLowerCaseProps(control.options.z),
+      w: toLowerCaseProps(control.options.w),
     };
 
     if (control.type === DebugGUIControlType.Vec2) {
-      delete lowerCaseOpts.z
-      delete lowerCaseOpts.w
+      delete lowerCaseOpts.z;
+      delete lowerCaseOpts.w;
     } else if (control.type === DebugGUIControlType.Vec3) {
-      delete lowerCaseOpts.w
+      delete lowerCaseOpts.w;
     }
 
     gui
@@ -187,21 +155,11 @@ export default class DebugGUIManager {
     attachInputListener();
   }
 
-  /**
-   *
-   * @param controlData
-   * @returns
-   */
-  addControl(controlData) {
-    // check if this control already exists
+  addControl(controlData: Record<string, any>) {
     if (controlData.Id in this.datObj) return;
-
-    // show dat.gui controls
-    // if (this.controls.length !== 0) this.showUI();
 
     const gui = this.resolveGUI(controlData);
 
-    // create control
     const control = new DebugGUIControl(controlData);
     this.controls.push(control);
     this.datObj[control.id] = control.createObjValue();
@@ -226,32 +184,18 @@ export default class DebugGUIManager {
       this.addVector(gui, control);
   }
 
-  /**
-   *
-   * @param controlsData
-   */
-  addControls(controlsData) {
+  addControls(controlsData: Record<string, any>[]) {
     for (let control of controlsData) this.addControl(control);
   }
 
-  /**
-   *
-   * @returns
-   */
   isHidden() {
     return window.getComputedStyle(this.container, null).display === "none";
   }
 
-  /**
-   *
-   */
   showUI() {
     if (this.isHidden()) this.container.style.display = "flex";
   }
 
-  /**
-   *
-   */
   hideUI() {
     if (!this.isHidden()) this.container.style.display = "none";
   }
