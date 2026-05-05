@@ -4,7 +4,7 @@ Venice Unleashed DebugGUI is a simple framework to easily create debug controls 
 
 ## Example
 
-In the following example, you can see how easy is to create a number of controls
+In the following example, you can see how easy it is to create a number of controls:
 
 ```lua
 require "__shared/DebugGUI"
@@ -14,7 +14,7 @@ DebugGUI:Button("Next Round", function()
   RCON:SendCommand("mapList.runNextRound")
 end)
 
--- A folder that groups player related controls
+-- A folder that groups player-related controls
 DebugGUI:Folder("Player", function()
   -- A button to kill the local player
   DebugGUI:Button("Suicide", function(value, player)
@@ -33,23 +33,23 @@ end)
 
 ```
 
-The above code will create this result
+The above code will create this result:
 
 ![](.github/debug-gui-screen.webp)
 
 ## Usage
 
-1. Download and add this mod into your server's ModList
-2. Copy the `ext/shared/DebugGUI.lua` file into the shared folder of the mod that you want to debug
-3. Require this file and start adding some controls based on the examples here
+1. Download and add this mod to your server's ModList
+2. Copy the `ext/shared/DebugGUI.lua` file into the shared folder of the mod you want to debug
+3. Require this file and start adding controls based on the examples here
 
 Press `F1` to toggle the mouse/keyboard (you can change the key in the config).
 
 ## Supported Controls
 
-There's a number of available controls to use, based on what tweakpane has to offer.
+There are a number of available controls based on what tweakpane has to offer.
 
-In every case, the callback has the `value` as the first argument. If the control was created in a server script, the `player` who triggers it is passed as the second argument.
+In every case, the callback receives `value` as the first argument. If the control was created in a server script, the `player` who triggered it is passed as the second argument.
 
 ### Button
 
@@ -175,7 +175,7 @@ OptionsType = {
 
 ### Dropdown
 
-! Unfortunately, native dropdowns don't work as expected in VU
+Unfortunately, native dropdowns do not work as expected in VU
 
 ```
 DebugGUI:Dropdown(name, options, [context,] callback)
@@ -188,7 +188,7 @@ options = {
 
 ### Toggle UI
 
-You can show and hide the UI on demand by calling these methods
+You can show and hide the UI on demand by calling these methods:
 ```lua
 DebugGUI:ShowUI()
 
@@ -197,9 +197,9 @@ DebugGUI:HideUI()
 
 ## Notice
 
-- There's no automatic syncing between clients. It's up to the mod developer to sync those changes.
+- There is no automatic syncing between clients. It is up to the mod developer to sync those changes.
 
-- You can't update the control's value from lua after it's creation, for now.
+- You cannot update the control's value from Lua after its creation, for now.
 
 ## License
 
