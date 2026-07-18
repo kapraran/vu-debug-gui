@@ -14,7 +14,7 @@ Events:Subscribe("Level:Loaded", function()
 end)
 
 Events:Subscribe("Player:UpdateInput", function()
-  if InputManager:WentKeyDown(Config.EnableMKBKey) then
+  if InputManager:WentKeyDown(DebugGUIConfig.EnableMKBKey) then
     mouseDisabled = not mouseDisabled
 
     if mouseDisabled then
@@ -44,6 +44,9 @@ Events:Subscribe("DBGUI:ResetMKB", function(jsonData)
 end)
 
 function OnShow(clear, data)
+  if clear then
+    WebUI:ExecuteJS("vext.clearControls()")
+  end
   WebUI:ExecuteJS("vext.addControls(" .. json.encode(data) ..")")
 end
 

@@ -3,4 +3,8 @@ import vext from '@vextjs/vite-plugin';
 
 export default defineConfig({
   plugins: [vext()],
+  build: {
+    minify: false,
+    sourcemap: true,
+  },
 });

@@ -200,7 +200,7 @@ end
 
 function DebugGUIManager:OnRequestControls()
   self.__controlsRequested = true
-  self:Show(false)
+  self:Show(true)
 end
 
 function DebugGUIManager:Show(clear)
@@ -233,12 +233,32 @@ function DebugGUIManager:Show(clear)
   end
 end
 
-function DebugGUIManager:ShowUI()
-  emitEvent("DBGUI:ShowUI")
+function DebugGUIManager:ShowUI(player)
+  if SharedUtils:IsClientModule() then
+    Events:Dispatch("DBGUI:ShowUI")
+  elseif player ~= nil then
+    NetEvents:SendTo("DBGUI:ShowUI", player)
+  end
 end
 
-function DebugGUIManager:HideUI()
-  emitEvent("DBGUI:HideUI")
+function DebugGUIManager:HideUI(player)
+  if SharedUtils:IsClientModule() then
+    Events:Dispatch("DBGUI:HideUI")
+  elseif player ~= nil then
+    NetEvents:SendTo("DBGUI:HideUI", player)
+  end
+end
+
+function DebugGUIManager:Remove(id)
+  self.controls[id] = nil
+  self.__controlsRequested = true
+  self:Show(true)
+end
+
+function DebugGUIManager:Clear()
+  self.controls = {}
+  self.__controlsRequested = true
+  self:Show(true)
 end
 
 local debugGUIManager = DebugGUIManager()
@@ -289,13 +309,17 @@ function DebugGUI.static:Text(name, defValue, context, callback)
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI.static:Number(name, defValue, context, callback)
+function DebugGUI.static:Number(name, options, context, callback)
+  if type(options) == 'number' or type(options) == 'string' then
+    options = { DefValue = options }
+  end
+
+  options = SetDefaultNumOpts(options)
+
   local control = DebugGUIControl(
     DebugGUIControlType.Number,
     name,
-    {
-      DefValue = defValue
-    },
+    options,
     context,
     callback
   )
@@ -339,15 +363,14 @@ function DebugGUI.static:Dropdown(name, options, context, callback)
 end
 
 function DebugGUI:Vector(name, options, context, callback)
-  local vector = options.DefValue
-
   -- defaults
   options.x = SetDefaultNumOpts(options.x, true)
   options.y = SetDefaultNumOpts(options.y, true)
 
-  if not options.Type == DebugGUIControlType.Vec2 then
+  if options.Type ~= DebugGUIControlType.Vec2 then
     options.z = SetDefaultNumOpts(options.z, true)
-  elseif not options.Type == DebugGUIControlType.Vec3 then
+  end
+  if options.Type == DebugGUIControlType.Vec4 then
     options.w = SetDefaultNumOpts(options.w, true)
   end
 
@@ -391,14 +414,22 @@ function DebugGUI.static:Folder(name, context, callback)
   debugGUIManager:Folder(name, context, callback)
 end
 
+function DebugGUI.static:Remove(id)
+  debugGUIManager:Remove(id)
+end
+
+function DebugGUI.static:Clear()
+  debugGUIManager:Clear()
+end
+
 function DebugGUI.static:Show(clear)
   debugGUIManager:Show(clear)
 end
 
-function DebugGUI.static:ShowUI()
-  debugGUIManager:ShowUI()
+function DebugGUI.static:ShowUI(player)
+  debugGUIManager:ShowUI(player)
 end
 
-function DebugGUI.static:HideUI()
-  debugGUIManager:HideUI()
+function DebugGUI.static:HideUI(player)
+  debugGUIManager:HideUI(player)
 end
