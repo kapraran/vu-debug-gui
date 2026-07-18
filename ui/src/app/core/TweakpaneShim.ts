@@ -24,7 +24,6 @@ function injectStyles(doc: Document) {
   color: #e8e9ee;
   width: 300px;
   margin: 8px 0;
-  overflow: hidden;
   user-select: none;
 }
 .shim-pane input {
@@ -40,13 +39,14 @@ function injectStyles(doc: Document) {
 .shim-pane-title {
   background-color: rgba(255,255,255,0.03);
   border-bottom: 1px solid rgba(232,147,60,0.4);
+  border-radius: 7px 7px 0 0;
   color: #e8e9ee;
   font-weight: 600;
   font-size: 11px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  height: 26px;
-  line-height: 26px;
+  height: 28px;
+  line-height: 28px;
   overflow: hidden;
   padding: 0 12px;
   text-align: center;
@@ -55,10 +55,10 @@ function injectStyles(doc: Document) {
   width: 100%;
 }
 .shim-pane-content {
-  padding: 6px 8px;
+  padding: 8px;
 }
 .shim-pane-content > * + * {
-  margin-top: 4px;
+  margin-top: 6px;
 }
 .shim-btn {
   background-color: #2a2d35;
@@ -70,8 +70,8 @@ function injectStyles(doc: Document) {
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
   font-weight: 600;
-  height: 24px;
-  line-height: 22px;
+  height: 26px;
+  line-height: 24px;
   margin: 0;
   overflow: hidden;
   padding: 0 8px;
@@ -100,8 +100,8 @@ function injectStyles(doc: Document) {
   font-weight: 600;
   font-size: 11px;
   letter-spacing: 0.5px;
-  height: 22px;
-  line-height: 22px;
+  height: 24px;
+  line-height: 24px;
   overflow: hidden;
   padding: 0 8px;
   text-overflow: ellipsis;
@@ -124,17 +124,17 @@ function injectStyles(doc: Document) {
 }
 .shim-folder-content {
   border-left: 1px solid rgba(255,255,255,0.06);
-  margin: 2px 0 2px 6px;
-  padding: 4px 4px 4px 8px;
+  margin: 4px 0 4px 6px;
+  padding: 6px 4px 6px 8px;
 }
 .shim-folder-content > * + * {
-  margin-top: 4px;
+  margin-top: 6px;
 }
 .shim-input {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-height: 20px;
+  min-height: 22px;
   position: relative;
 }
 .shim-input-clickable {
@@ -166,7 +166,7 @@ function injectStyles(doc: Document) {
 .shim-input-number, .shim-input-text {
   flex: 1;
   min-width: 0;
-  height: 18px;
+  height: 20px;
   padding: 0 6px;
   color: #e8e9ee;
   font-family: 'Segoe UI', sans-serif;
@@ -175,7 +175,7 @@ function injectStyles(doc: Document) {
 }
 .shim-slider-wrapper {
   position: relative;
-  height: 20px;
+  height: 22px;
   flex: 1;
   min-width: 0;
   cursor: pointer;
@@ -204,12 +204,13 @@ function injectStyles(doc: Document) {
 .shim-slider-thumb {
   position: absolute;
   top: 50%;
-  width: 10px;
-  height: 10px;
-  margin-left: -5px;
-  margin-top: -5px;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  margin-top: -6px;
   background-color: #e8933c;
-  border-radius: 2px;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
   pointer-events: none;
   transition: background-color 120ms ease;
 }
@@ -219,7 +220,7 @@ function injectStyles(doc: Document) {
 .shim-slider-value {
   display: flex;
   align-items: center;
-  height: 18px;
+  height: 20px;
   min-width: 34px;
   padding: 0 6px;
   color: #e8e9ee;
@@ -236,8 +237,8 @@ function injectStyles(doc: Document) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
   background-color: #14161b;
   border: 1px solid rgba(255,255,255,0.08);
@@ -262,7 +263,7 @@ function injectStyles(doc: Document) {
 .shim-vector-row {
   display: flex;
   flex: 1;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
 }
 .shim-vector-axis {
@@ -275,7 +276,7 @@ function injectStyles(doc: Document) {
   align-items: center;
   flex: 1;
   min-width: 0;
-  height: 18px;
+  height: 20px;
   overflow: hidden;
 }
 .shim-vector-axis-label {
@@ -284,7 +285,7 @@ function injectStyles(doc: Document) {
   flex-shrink: 0;
   width: 12px;
   text-align: center;
-  line-height: 18px;
+  line-height: 20px;
   background-color: rgba(255,255,255,0.03);
 }
 .shim-vector-axis-input input {
@@ -309,8 +310,8 @@ function injectStyles(doc: Document) {
   display: flex;
   align-items: center;
   cursor: pointer;
-  height: 18px;
-  padding: 0 4px 0 6px;
+  height: 20px;
+  padding: 0 6px;
   user-select: none;
 }
 .shim-dropdown-header-value {
@@ -353,7 +354,7 @@ function injectStyles(doc: Document) {
   to { opacity: 1; transform: translateY(0); }
 }
 .shim-dropdown-option {
-  padding: 3px 6px;
+  padding: 5px 8px;
   cursor: pointer;
   font-family: 'Segoe UI', sans-serif;
   font-size: 11px;
