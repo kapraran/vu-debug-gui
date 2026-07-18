@@ -1,16 +1,8 @@
 import DebugGUIControlType from "../enums/DebugGUIControlType";
 import DebugGUIControl from "./DebugGUIControl";
-import { enableKeyboard, resetKeyboard } from "./WebUI";
-import { Pane, FolderApi } from "tweakpane";
+import { Pane, FolderApi } from "./TweakpaneShim";
 
 type GUI = Pane | FolderApi;
-
-function attachInputListener() {
-  Array.from(document.querySelectorAll("input")).forEach((el) => {
-    el.addEventListener("focus", enableKeyboard);
-    el.addEventListener("blur", resetKeyboard);
-  });
-}
 
 function toLowerCaseProps(obj: Record<string, any> | undefined) {
   if (!obj) return undefined;
@@ -22,7 +14,7 @@ function toLowerCaseProps(obj: Record<string, any> | undefined) {
 }
 
 export default class DebugGUIManager {
-  private gui: GUI;
+  private gui: Pane;
   private controls: DebugGUIControl[];
   private folders: { [name: string]: GUI };
   private datObj: { [name: string]: any };
@@ -42,7 +34,7 @@ export default class DebugGUIManager {
   }
 
   resolveGUI(controlData: Record<string, any>) {
-    let gui = this.gui;
+    let gui: GUI = this.gui;
 
     if (controlData.hasOwnProperty("Folder")) {
       if (!this.folders.hasOwnProperty(controlData.Folder)) {
@@ -67,7 +59,7 @@ export default class DebugGUIManager {
 
   addCheckbox(gui: GUI, control: DebugGUIControl) {
     gui
-      .addInput(this.datObj, control.id, {
+      .addBinding(this.datObj, control.id, {
         label: control.name,
       })
       .on("change", control.callback.bind(control));
@@ -75,22 +67,25 @@ export default class DebugGUIManager {
 
   addText(gui: GUI, control: DebugGUIControl) {
     gui
-      .addInput(this.datObj, control.id, {
+      .addBinding(this.datObj, control.id, {
         label: control.name,
       })
       .on("change", control.callback.bind(control));
-
-    attachInputListener();
   }
 
   addNumber(gui: GUI, control: DebugGUIControl) {
-    gui
-      .addInput(this.datObj, control.id, {
-        label: control.name,
-      })
-      .on("change", control.callback.bind(control));
+    const opts = control.options as any;
+    const params: Record<string, any> = {
+      label: control.name,
+    };
 
-    attachInputListener();
+    if ('Min' in opts) params.min = opts.Min;
+    if ('Max' in opts) params.max = opts.Max;
+    if (opts.Step != null) params.step = opts.Step;
+
+    gui
+      .addBinding(this.datObj, control.id, params)
+      .on("change", control.callback.bind(control));
   }
 
   addRange(gui: GUI, control: DebugGUIControl) {
@@ -99,15 +94,14 @@ export default class DebugGUIManager {
     }
 
     gui
-      .addInput(this.datObj, control.id, {
+      .addBinding(this.datObj, control.id, {
         label: control.name,
         min: control.options.Min,
         max: control.options.Max,
         step: control.options.Step,
+        slider: true,
       })
       .on("change", control.callback.bind(control));
-
-    attachInputListener();
   }
 
   addDropdown(gui: GUI, control: DebugGUIControl) {
@@ -121,7 +115,7 @@ export default class DebugGUIManager {
     }, {} as Record<string, any>);
 
     gui
-      .addInput(this.datObj, control.id, {
+      .addBinding(this.datObj, control.id, {
         label: control.name,
         options,
       })
@@ -149,10 +143,8 @@ export default class DebugGUIManager {
     }
 
     gui
-      .addInput(this.datObj, control.id, lowerCaseOpts)
+      .addBinding(this.datObj, control.id, lowerCaseOpts)
       .on("change", control.callback.bind(control));
-
-    attachInputListener();
   }
 
   addControl(controlData: Record<string, any>) {
@@ -190,6 +182,17 @@ export default class DebugGUIManager {
 
   isHidden() {
     return window.getComputedStyle(this.container, null).display === "none";
+  }
+
+  clearControls() {
+    this.controls = [];
+    this.folders = {};
+    this.datObj = {};
+    this.gui.dispose();
+    this.gui = new Pane({
+      title: "DebugGUI",
+      container: this.container,
+    });
   }
 
   showUI() {
