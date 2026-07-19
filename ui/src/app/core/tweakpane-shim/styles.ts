@@ -46,7 +46,7 @@ export const CSS_CONTENT = `
   width: 100%;
 }
 .shim-pane-content {
-  padding: 8px;
+  padding: 8px 8px 8px 14px;
 }
 .shim-pane-content > * + * {
   margin-top: 6px;
@@ -129,6 +129,7 @@ export const CSS_CONTENT = `
   align-items: center;
   gap: 6px;
   min-height: 22px;
+  padding: 0 8px;
   position: relative;
 }
 .shim-input-clickable {
