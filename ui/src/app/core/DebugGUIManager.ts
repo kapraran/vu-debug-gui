@@ -56,6 +56,7 @@ export default class DebugGUIManager {
       .addButton({
         title: control.name,
         tooltip: control.tooltip,
+        icon: control.icon,
       })
       .on("click", () => control.callback({}));
     if (!control.visible) btn.hide();

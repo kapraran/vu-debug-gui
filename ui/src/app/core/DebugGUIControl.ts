@@ -17,6 +17,7 @@ export default class DebugGUIControl {
   readonly step?: number;
   readonly values?: unknown[] | Record<string, unknown>;
   readonly format?: string;
+  readonly icon?: string;
   readonly tooltip?: string;
   readonly visible: boolean;
   readonly disabled: boolean;
@@ -35,6 +36,7 @@ export default class DebugGUIControl {
     this.step = opts.step;
     this.values = opts.values;
     this.format = opts.format;
+    this.icon = opts.icon as string | undefined;
     this.tooltip = opts.tooltip;
     this.visible = opts.visible ?? true;
     this.disabled = opts.disabled ?? false;

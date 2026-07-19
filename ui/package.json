@@ -6,9 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:no-icons": "tsc && vite build --mode no-icons",
     "preview": "vite preview"
-  },
-  "dependencies": {
   },
   "devDependencies": {
     "@vextjs/vite-plugin": "^0.4.0",
@@ -16,5 +15,8 @@
     "oxlint": "^1.63.0",
     "typescript": "~6.0.2",
     "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "@phosphor-icons/web": "^2.1.2"
   }
 }

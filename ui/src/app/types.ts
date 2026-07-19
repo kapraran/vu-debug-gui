@@ -22,6 +22,7 @@ export interface ControlOptions {
   step?: number;
   values?: unknown[] | Record<string, unknown>;
   format?: string;
+  icon?: string;
   tooltip?: string;
   visible?: boolean;
   disabled?: boolean;

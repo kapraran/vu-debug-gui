@@ -54,16 +54,15 @@ export const CSS_CONTENT = `
   border-radius: 4px;
   color: #e8e9ee;
   cursor: pointer;
-  display: block;
+  display: flex;
+  align-items: center;
   font-family: 'Segoe UI', sans-serif;
   font-size: 12px;
   font-weight: 600;
   height: 26px;
-  line-height: 24px;
   margin: 0;
   overflow: hidden;
   padding: 0 8px;
-  text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
@@ -423,5 +422,11 @@ export const CSS_CONTENT = `
 .shim-btn-disabled {
   opacity: 0.4;
   cursor: default;
+}
+.shim-btn .shim-btn-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-right: 6px;
 }
 `;

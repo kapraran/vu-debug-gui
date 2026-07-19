@@ -19,6 +19,8 @@ export type InputBindingParams = {
   w?: AxisParams;
 };
 
+export type IconData = { viewBox: string; path: string };
+
 export interface PaneConfig {
   title?: string;
   container?: HTMLElement;

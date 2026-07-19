@@ -22,21 +22,38 @@ jobs:
       - name: Install
         run: cd ui && npm ci
 
-      - name: Build
+      - name: Build with icons
         run: cd ui && npm run build
+
+      - name: Rename icons build
+        run: Rename-Item -Path ui.vuic -NewName ui-icons.vuic
+
+      - name: Build without icons
+        run: cd ui && npm run build:no-icons
+
+      - name: Rename no-icons build
+        run: Rename-Item -Path ui.vuic -NewName ui-no-icons.vuic
 
       - name: Stage release files
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path release
-          Copy-Item -Path ext -Destination release/ext -Recurse
-          Copy-Item -Path mod.json -Destination release/
-          Copy-Item -Path ui.vuic -Destination release/
+          New-Item -ItemType Directory -Path release-icons
+          Copy-Item -Path ext -Destination release-icons/ext -Recurse
+          Copy-Item -Path mod.json -Destination release-icons/
+          Copy-Item -Path ui-icons.vuic -Destination release-icons/ui.vuic
 
-      - name: Zip
+          New-Item -ItemType Directory -Path release-no-icons
+          Copy-Item -Path ext -Destination release-no-icons/ext -Recurse
+          Copy-Item -Path mod.json -Destination release-no-icons/
+          Copy-Item -Path ui-no-icons.vuic -Destination release-no-icons/ui.vuic
+
+      - name: Zip icons
         shell: pwsh
-        run: |
-          Compress-Archive -Path release/* -DestinationPath "vu-debug-gui-${{ github.ref_name }}.zip"
+        run: Compress-Archive -Path release-icons/* -DestinationPath "vu-debug-gui-${{ github.ref_name }}.zip"
+
+      - name: Zip no-icons
+        shell: pwsh
+        run: Compress-Archive -Path release-no-icons/* -DestinationPath "vu-debug-gui-${{ github.ref_name }}-no-icons.zip"
 
       - name: Release
         uses: softprops/action-gh-release@v3
