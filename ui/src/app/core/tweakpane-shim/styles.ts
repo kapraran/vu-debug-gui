@@ -105,8 +105,11 @@ export const CSS_CONTENT = `
   background-color: rgba(255,255,255,0.07);
 }
 .shim-folder-chevron {
-  color: #8a8d98;
-  font-size: 9px;
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 5px solid #8a8d98;
   flex-shrink: 0;
   transition: transform 120ms ease;
 }
