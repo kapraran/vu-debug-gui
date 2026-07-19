@@ -43,18 +43,18 @@ Events:Subscribe("DBGUI:ResetMKB", function(jsonData)
   WebUI:ResetKeyboard()
 end)
 
-function OnShow(clear, data)
+local function OnShow(clear, data)
   if clear then
     WebUI:ExecuteJS("vext.clearControls()")
   end
   WebUI:ExecuteJS("vext.addControls(" .. json.encode(data) ..")")
 end
 
-function ShowUI()
+local function ShowUI()
   WebUI:ExecuteJS("vext.showUI()")
 end
 
-function HideUI()
+local function HideUI()
   WebUI:ExecuteJS("vext.hideUI()")
 end
 
@@ -64,7 +64,7 @@ NetEvents:Subscribe("DBGUI:ShowUI", ShowUI)
 Events:Subscribe("DBGUI:HideUI", HideUI)
 NetEvents:Subscribe("DBGUI:HideUI", HideUI)
 
-function OnSetValue(id, value)
+local function OnSetValue(id, value)
   WebUI:ExecuteJS("vext.setControlValue(" .. json.encode({id = id, value = value}) .. ")")
 end
 
