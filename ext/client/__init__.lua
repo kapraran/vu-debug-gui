@@ -43,11 +43,16 @@ Events:Subscribe("DBGUI:ResetMKB", function(jsonData)
   WebUI:ResetKeyboard()
 end)
 
-local function OnShow(clear, data)
+local function OnShow(clear, payload)
   if clear then
     WebUI:ExecuteJS("vext.clearControls()")
   end
-  WebUI:ExecuteJS("vext.addControls(" .. json.encode(data) ..")")
+  if payload.panels then
+    WebUI:ExecuteJS("vext.addPanels(" .. json.encode(payload.panels) .. ")")
+  end
+  if payload.controls then
+    WebUI:ExecuteJS("vext.addControls(" .. json.encode(payload.controls) ..")")
+  end
 end
 
 local function ShowUI()

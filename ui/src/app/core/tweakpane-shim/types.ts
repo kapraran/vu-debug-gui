@@ -24,4 +24,14 @@ export type IconData = { viewBox: string; path: string };
 export interface PaneConfig {
   title?: string;
   container?: HTMLElement;
+  position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  width?: number | string;
+}
+
+export interface TabConfig {
+  title: string;
+}
+
+export interface RowConfig {
+  title?: string;
 }

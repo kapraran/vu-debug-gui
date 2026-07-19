@@ -1,15 +1,16 @@
 import DebugGUIControlType from "../enums/DebugGUIControlType";
 import DebugGUIControl from "./DebugGUIControl";
-import { Pane, FolderApi } from "./tweakpane-shim";
+import { Pane, FolderApi, TabApi, RowApi } from "./tweakpane-shim";
 import type { InputBindingApi, ButtonApi } from "./tweakpane-shim";
-import type { ControlData } from "../types";
+import type { ControlData, PanelData, ContainerSegment } from "../types";
 
-type GUI = Pane | FolderApi;
+type GUI = Pane | FolderApi | TabApi | RowApi;
 
 export default class DebugGUIManager {
   private gui: Pane;
   private controls: DebugGUIControl[];
-  private folders: Record<string, GUI>;
+  private containers: Record<string, GUI>;
+  private panes: Record<string, Pane>;
   private datObj: Record<string, unknown>;
   private bindings: Map<string, InputBindingApi>;
   private buttons: Map<string, ButtonApi>;
@@ -24,28 +25,55 @@ export default class DebugGUIManager {
     });
 
     this.controls = [];
-    this.folders = {};
+    this.containers = {};
+    this.panes = {};
     this.datObj = {};
     this.bindings = new Map();
     this.buttons = new Map();
   }
 
-  resolveGUI(controlData: ControlData): GUI {
+  resolveGUI(path: ContainerSegment[] | null | undefined): GUI {
+    if (!path || path.length === 0) return this.gui;
+
     let gui: GUI = this.gui;
-    const folder = controlData.Folder;
-    if (folder == null) return gui;
+    let currentKey = "";
 
-    const segments = folder.split("/");
-    let currentPath = "";
+    for (let i = 0; i < path.length; i++) {
+      const seg = path[i];
 
-    for (const segment of segments) {
-      currentPath = currentPath ? `${currentPath}/${segment}` : segment;
-
-      if (!(currentPath in this.folders)) {
-        this.folders[currentPath] = gui.addFolder({ title: segment });
+      if (seg.type === "panel") {
+        currentKey = "panel:" + seg.name;
+        if (!(currentKey in this.containers)) {
+          const pane = this.panes[seg.name] ?? this.gui;
+          this.containers[currentKey] = pane;
+        }
+        gui = this.containers[currentKey];
+        continue;
       }
 
-      gui = this.folders[currentPath];
+      if (seg.type === "tab") {
+        currentKey = currentKey ? currentKey + "/tab" : "tab";
+        if (!(currentKey in this.containers)) {
+          this.containers[currentKey] = gui.addTab({ title: seg.name });
+        } else {
+          (this.containers[currentKey] as TabApi).switchTab(seg.name);
+        }
+        gui = this.containers[currentKey];
+        continue;
+      }
+
+      currentKey = currentKey
+        ? currentKey + "/" + seg.type + ":" + seg.name
+        : seg.type + ":" + seg.name;
+
+      if (!(currentKey in this.containers)) {
+        if (seg.type === "row") {
+          this.containers[currentKey] = gui.addRow({ title: seg.title });
+        } else {
+          this.containers[currentKey] = gui.addFolder({ title: seg.name });
+        }
+      }
+      gui = this.containers[currentKey];
     }
 
     return gui;
@@ -154,7 +182,7 @@ export default class DebugGUIManager {
   addControl(controlData: ControlData): void {
     if (controlData.Id in this.datObj) return;
 
-    const gui = this.resolveGUI(controlData);
+    const gui = this.resolveGUI(controlData.Path);
 
     const control = new DebugGUIControl(controlData);
     this.controls.push(control);
@@ -173,6 +201,18 @@ export default class DebugGUIManager {
 
   addControls(controlsData: ControlData[]): void {
     for (const control of controlsData) this.addControl(control);
+  }
+
+  addPanels(panels: Record<string, PanelData>): void {
+    for (const [name, data] of Object.entries(panels)) {
+      if (name in this.panes) continue;
+      this.panes[name] = new Pane({
+        title: name,
+        container: document.body,
+        position: data.position ?? "bottom-left",
+        width: data.width ?? 300,
+      });
+    }
   }
 
   isHidden(): boolean {
@@ -211,11 +251,17 @@ export default class DebugGUIManager {
 
   clearControls(): void {
     this.controls = [];
-    this.folders = {};
+    this.containers = {};
     this.datObj = {};
     this.bindings = new Map();
     this.buttons = new Map();
     this.gui.dispose();
+
+    for (const pane of Object.values(this.panes)) {
+      pane.dispose();
+    }
+    this.panes = {};
+
     this.gui = new Pane({
       title: "DebugGUI",
       container: this.container,

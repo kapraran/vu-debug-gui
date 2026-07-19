@@ -16,6 +16,8 @@ export abstract class WidgetContainer {
   }
 
   abstract addFolder(params: { title: string }): WidgetContainer;
+  abstract addTab(params: { title: string }): WidgetContainer;
+  abstract addRow(params: { title?: string }): WidgetContainer;
 
   addBinding(obj: Record<string, unknown>, key: string, params?: InputBindingParams): InputBindingApi {
     const binding = new InputBindingApi(this.element.ownerDocument!, obj, key, params);

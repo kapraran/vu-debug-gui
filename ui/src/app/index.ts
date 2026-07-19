@@ -9,6 +9,7 @@ const manager = new DebugGUIManager();
 
 const vext = {
   addControls: manager.addControls.bind(manager),
+  addPanels: manager.addPanels.bind(manager),
   clearControls: manager.clearControls.bind(manager),
   showUI: manager.showUI.bind(manager),
   hideUI: manager.hideUI.bind(manager),

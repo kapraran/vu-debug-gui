@@ -1,10 +1,22 @@
 import type { DebugGUIControlType } from "./enums/DebugGUIControlType";
 
+export interface ContainerSegment {
+  type: "panel" | "tab" | "folder" | "row";
+  name: string;
+  title?: string;
+}
+
+export interface PanelData {
+  position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  width?: number;
+  collapsed?: boolean;
+}
+
 export interface ControlData {
   Id: string;
   Type: DebugGUIControlType;
   Name: string;
-  Folder?: string;
+  Path?: ContainerSegment[];
   Options: ControlOptions;
   IsClient: boolean;
 }
@@ -34,6 +46,7 @@ export interface ControlOptions {
 
 export interface VeExt {
   addControls: (controls: ControlData[]) => void;
+  addPanels: (panels: Record<string, PanelData>) => void;
   clearControls: () => void;
   showUI: () => void;
   hideUI: () => void;

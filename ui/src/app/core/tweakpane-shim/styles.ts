@@ -429,4 +429,88 @@ export const CSS_CONTENT = `
   flex-shrink: 0;
   margin-right: 6px;
 }
+.shim-pane-tl {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+}
+.shim-pane-tr {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+}
+.shim-pane-bl {
+  position: fixed;
+  bottom: 8px;
+  left: 8px;
+}
+.shim-pane-br {
+  position: fixed;
+  bottom: 8px;
+  right: 8px;
+}
+.shim-tabs {
+  margin: 4px 0;
+}
+.shim-tab-bar {
+  display: flex;
+  background-color: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-radius: 3px 3px 0 0;
+  overflow: hidden;
+}
+.shim-tab-btn {
+  background: none;
+  border: none;
+  color: #8a8d98;
+  cursor: pointer;
+  flex: 1;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  height: 24px;
+  letter-spacing: 0.5px;
+  padding: 0 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+.shim-tab-btn:hover {
+  background-color: rgba(255,255,255,0.05);
+  color: #e8e9ee;
+}
+.shim-tab-btn.active {
+  background-color: rgba(232,147,60,0.12);
+  color: #e8933c;
+  box-shadow: inset 0 -2px 0 #e8933c;
+}
+.shim-tab-panels {
+  padding: 4px 0;
+}
+.shim-tab-panel > * + * {
+  margin-top: 6px;
+}
+.shim-row {
+  margin: 2px 0;
+}
+.shim-row-title {
+  color: #8a8d98;
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.shim-row-content {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+}
+.shim-row-content > * {
+  flex: 1;
+  min-width: 0;
+}
+.shim-row-content .shim-input {
+  padding: 0;
+}
 `;

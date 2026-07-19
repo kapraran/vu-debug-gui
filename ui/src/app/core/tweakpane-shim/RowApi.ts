@@ -1,39 +1,26 @@
 import { WidgetContainer } from "./WidgetContainer";
+import { FolderApi } from "./FolderApi";
 import { TabApi } from "./TabApi";
-import { RowApi } from "./RowApi";
 
-export class FolderApi extends WidgetContainer {
+export class RowApi extends WidgetContainer {
   readonly element: HTMLElement;
   protected contentEl: HTMLElement;
-  private expanded = true;
 
   constructor(title: string | undefined, doc: Document) {
     super();
 
     this.element = doc.createElement("div");
-    this.element.className = "shim-folder expanded";
+    this.element.className = "shim-row";
 
     if (title) {
-      const titleEl = doc.createElement("div");
-      titleEl.className = "shim-folder-title";
-
-      const chevron = doc.createElement("span");
-      chevron.className = "shim-folder-chevron";
-
-      const titleText = doc.createElement("span");
-      titleText.textContent = title;
-
-      titleEl.append(chevron, titleText);
-      titleEl.addEventListener("click", () => {
-        this.expanded = !this.expanded;
-        this.element.classList.toggle("expanded", this.expanded);
-        this.contentEl.style.display = this.expanded ? "" : "none";
-      });
+      const titleEl = doc.createElement("span");
+      titleEl.className = "shim-row-title";
+      titleEl.textContent = title;
       this.element.appendChild(titleEl);
     }
 
     this.contentEl = doc.createElement("div");
-    this.contentEl.className = "shim-folder-content";
+    this.contentEl.className = "shim-row-content";
     this.element.appendChild(this.contentEl);
   }
 

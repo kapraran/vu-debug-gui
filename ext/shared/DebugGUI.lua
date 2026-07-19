@@ -51,7 +51,7 @@ function DebugGUIControl:__init(_type, name, options, callback)
   self.lastValue = options.value
   self.__visible = options.visible ~= false
   self.__disabled = options.disabled == true
-  self.folder = nil
+  self.path = nil
   self.order = DebugGUIControl.OrderIndex
 
   DebugGUIControl.static.OrderIndex = DebugGUIControl.OrderIndex + 1
@@ -164,7 +164,7 @@ function DebugGUIControl:AsTable()
     Id = self.id:ToString("D"),
     Type = self.type,
     Name = self.name,
-    Folder = self.folder,
+    Path = self.path,
     Options = self.options,
     IsClient = self.isClient,
   }
@@ -178,12 +178,18 @@ class "DebugGUIManager"
 
 function DebugGUIManager:__init()
   self.controls = {}
+  self.__panels = {}
 
   self.__controlsRequested = false
-  self.__folderStack = {}
   self.__visibilityPreds = {}
+  self.__rowId = 0
 
   self:RegisterEvents()
+end
+
+function DebugGUIManager:NextRowId()
+  self.__rowId = self.__rowId + 1
+  return self.__rowId
 end
 
 function DebugGUIManager:RegisterVisibilityPred(control)
@@ -212,6 +218,33 @@ function DebugGUIManager:RegisterEvents()
   end
 end
 
+function DebugGUIManager:RegisterPanel(name, options)
+  options = options or {}
+  self.__panels[name] = options
+end
+
+function DebugGUIManager:ShowPanel(name, visible)
+  self.__panels[name] = self.__panels[name] or {}
+  self.__panels[name].visible = visible
+  self.__controlsRequested = true
+  self:Show(true)
+end
+
+function DebugGUIManager:DestroyPanel(name)
+  self.__panels[name] = nil
+
+  local toKeep = {}
+  for id, control in pairs(self.controls) do
+    if control.path == nil or control.path[1].type ~= "panel" or control.path[1].name ~= name then
+      toKeep[id] = control
+    end
+  end
+  self.controls = toKeep
+
+  self.__controlsRequested = true
+  self:Show(true)
+end
+
 function DebugGUIManager:OnChange(id, value, player)
   local control = self.controls[id]
 
@@ -232,10 +265,6 @@ function DebugGUIManager:Add(control)
     return nil
   end
 
-  if #self.__folderStack > 0 then
-    control.folder = table.concat(self.__folderStack, "/")
-  end
-
   self.controls[control.id:ToString("D")] = control
 
   if self.__controlsRequested then
@@ -244,13 +273,6 @@ function DebugGUIManager:Add(control)
   end
 
   return control
-end
-
-function DebugGUIManager:Folder(name, options, callback)
-  options = options or {}
-  table.insert(self.__folderStack, name)
-  callback(options.context)
-  table.remove(self.__folderStack)
 end
 
 function DebugGUIManager:OnRequestControls()
@@ -274,15 +296,32 @@ function DebugGUIManager:Show(clear)
     return controlA.order < controlB.order
   end)
 
-  local data = {}
+  local controls = {}
   for _, control in ipairs(controlsOrdered) do
-    table.insert(data, control:AsTable())
+    table.insert(controls, control:AsTable())
   end
 
+  local panels = {}
+  for name, opts in pairs(self.__panels) do
+    if opts.visible ~= false then
+      panels[name] = {
+        position = opts.position or "bottom-left",
+        width = opts.width or 300,
+        collapsed = opts.collapsed or false,
+      }
+    end
+  end
+
+  local payload = {
+    clear = clear,
+    panels = panels,
+    controls = controls,
+  }
+
   if SharedUtils:IsClientModule() then
-    Events:Dispatch("DBGUI:Show", clear, data)
+    Events:Dispatch("DBGUI:Show", clear, payload)
   else
-    NetEvents:Broadcast("DBGUI:Show.Net", clear, data)
+    NetEvents:Broadcast("DBGUI:Show.Net", clear, payload)
   end
 end
 
@@ -310,11 +349,161 @@ end
 
 function DebugGUIManager:Clear()
   self.controls = {}
+  self.__panels = {}
   self.__controlsRequested = true
   self:Show(true)
 end
 
 local debugGUIManager = DebugGUIManager()
+
+-- 
+-- DebugGUIContainer
+-- 
+
+class "DebugGUIContainer"
+
+function DebugGUIContainer:__init(containerType, name, options, parent)
+  self.type = containerType
+  self.name = name
+  self.options = options or {}
+
+  self.path = {}
+  if parent then
+    for _, seg in ipairs(parent.path) do
+      table.insert(self.path, seg)
+    end
+  end
+
+  local seg = { type = containerType, name = name }
+  if containerType == "row" and options.title ~= nil then
+    seg.title = options.title
+  end
+  table.insert(self.path, seg)
+end
+
+function DebugGUIContainer:_create(controlType, name, options, callback)
+  local ctrl = DebugGUIControl(controlType, name, options, callback)
+
+  ctrl.path = {}
+  for _, seg in ipairs(self.path) do
+    table.insert(ctrl.path, { type = seg.type, name = seg.name })
+  end
+
+  return debugGUIManager:Add(ctrl)
+end
+
+function DebugGUIContainer:Button(name, options, callback)
+  return self:_create(DebugGUIControlType.Button, name, options, callback)
+end
+
+function DebugGUIContainer:Checkbox(name, options, callback)
+  options = options or {}
+  return self:_create(DebugGUIControlType.Checkbox, name, options, callback)
+end
+
+function DebugGUIContainer:Text(name, options, callback)
+  options = options or {}
+  return self:_create(DebugGUIControlType.Text, name, options, callback)
+end
+
+function DebugGUIContainer:Number(name, options, callback)
+  options = options or {}
+  options = SetDefaultNumOpts(options)
+  return self:_create(DebugGUIControlType.Number, name, options, callback)
+end
+
+function DebugGUIContainer:Range(name, options, callback)
+  options = options or {}
+  options = SetDefaultNumOpts(options)
+  return self:_create(DebugGUIControlType.Range, name, options, callback)
+end
+
+function DebugGUIContainer:Dropdown(name, options, callback)
+  options = options or {}
+  if options.values == nil then
+    error("Dropdown requires a values table")
+  end
+  if options.value == nil then
+    if type(options.values) == 'table' and options.values[1] ~= nil then
+      options.value = options.values[1]
+    else
+      for _, v in pairs(options.values) do
+        options.value = v
+        break
+      end
+    end
+  end
+  return self:_create(DebugGUIControlType.Dropdown, name, options, callback)
+end
+
+function DebugGUIContainer:Vec2(name, options, callback)
+  options = options or {}
+  if options.value == nil then options.value = Vec2(0, 0) end
+  return self:_vec(name, options, callback, DebugGUIControlType.Vec2)
+end
+
+function DebugGUIContainer:Vec3(name, options, callback)
+  options = options or {}
+  if options.value == nil then options.value = Vec3(0, 0, 0) end
+  return self:_vec(name, options, callback, DebugGUIControlType.Vec3)
+end
+
+function DebugGUIContainer:Vec4(name, options, callback)
+  options = options or {}
+  if options.value == nil then options.value = Vec4(0, 0, 0, 0) end
+  return self:_vec(name, options, callback, DebugGUIControlType.Vec4)
+end
+
+function DebugGUIContainer:_vec(name, options, callback, vecType)
+  options.x = SetDefaultNumOpts(options.x, true)
+  options.y = SetDefaultNumOpts(options.y, true)
+  if vecType ~= DebugGUIControlType.Vec2 then
+    options.z = SetDefaultNumOpts(options.z, true)
+  end
+  if vecType == DebugGUIControlType.Vec4 then
+    options.w = SetDefaultNumOpts(options.w, true)
+  end
+
+  return self:_create(vecType, name, options, callback)
+end
+
+function DebugGUIContainer:Folder(name, options, callback)
+  options = options or {}
+  local child = DebugGUIContainer("folder", name, options, self)
+  if callback then callback(child) end
+  return child
+end
+
+function DebugGUIContainer:Tab(name, options, callback)
+  options = options or {}
+  local child = DebugGUIContainer("tab", name, options, self)
+  if callback then callback(child) end
+  return child
+end
+
+function DebugGUIContainer:Row(options, callback)
+  if type(options) == "function" then
+    callback = options
+    options = {}
+  end
+  options = options or {}
+  local name = options.title or ("row-" .. tostring(debugGUIManager:NextRowId()))
+  local child = DebugGUIContainer("row", name, options, self)
+  if callback then callback(child) end
+  return child
+end
+
+function DebugGUIContainer:Show()
+  debugGUIManager:ShowPanel(self.name, true)
+end
+
+function DebugGUIContainer:Hide()
+  debugGUIManager:ShowPanel(self.name, false)
+end
+
+function DebugGUIContainer:Destroy()
+  debugGUIManager:DestroyPanel(self.name)
+end
 
 -- 
 -- DebugGUI
@@ -467,7 +656,37 @@ function DebugGUI.static:Print(str)
 end
 
 function DebugGUI.static:Folder(name, options, callback)
-  debugGUIManager:Folder(name, options, callback)
+  options = options or {}
+  local container = DebugGUIContainer("folder", name, options, nil)
+  if callback then callback(container) end
+  return container
+end
+
+function DebugGUI.static:Tab(name, options, callback)
+  options = options or {}
+  local container = DebugGUIContainer("tab", name, options, nil)
+  if callback then callback(container) end
+  return container
+end
+
+function DebugGUI.static:Row(options, callback)
+  if type(options) == "function" then
+    callback = options
+    options = {}
+  end
+  options = options or {}
+  local name = options.title or ("row-" .. tostring(debugGUIManager:NextRowId()))
+  local container = DebugGUIContainer("row", name, options, nil)
+  if callback then callback(container) end
+  return container
+end
+
+function DebugGUI.static:CreatePanel(name, options, callback)
+  options = options or {}
+  debugGUIManager:RegisterPanel(name, options)
+  local container = DebugGUIContainer("panel", name, options, nil)
+  if callback then callback(container) end
+  return container
 end
 
 function DebugGUI.static:Remove(id)
