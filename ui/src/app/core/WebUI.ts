@@ -1,5 +1,3 @@
-import throttle from "lodash.throttle";
-
 declare class WebUI {
   static Call: (cmd: string) => void;
 }
@@ -10,8 +8,17 @@ export type EventPayload = {
   value?: any;
 };
 
-// make sure that the WebUI.Call will be available when
-// creating the throttled version
+function throttle(fn: Function, delay: number) {
+  let lastCall = 0;
+  return function (...args: any[]) {
+    const now = performance.now();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      fn(...args);
+    }
+  };
+}
+
 let throttledCall: Function | undefined;
 window.addEventListener(
   "load",
