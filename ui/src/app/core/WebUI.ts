@@ -1,10 +1,9 @@
 declare class WebUI {
-  static Call: (cmd: string) => void;
+  static Call: (cmd: string, ...args: string[]) => void;
 }
 
-/* c8 ignore next 4 */
 if (import.meta.env.DEV) {
-  (window as unknown as Record<string, unknown>).WebUI ??= { Call: (...args: unknown[]) => console.log("[WebUI.Call]", ...args) } as never;
+  (window as unknown as Record<string, unknown>).WebUI ??= { Call: (...args: unknown[]) => console.log("[WebUI.Call]", ...args) };
 }
 
 export type EventPayload = {
@@ -13,9 +12,9 @@ export type EventPayload = {
   value?: unknown;
 };
 
-function throttle(fn: Function, delay: number) {
+function throttle(fn: (...args: string[]) => void, delay: number) {
   let lastCall = 0;
-  return function (...args: any[]) {
+  return function (...args: string[]) {
     const now = performance.now();
     if (now - lastCall >= delay) {
       lastCall = now;
@@ -24,7 +23,7 @@ function throttle(fn: Function, delay: number) {
   };
 }
 
-let throttledCall: Function | undefined;
+let throttledCall: ((...args: string[]) => void) | undefined;
 window.addEventListener(
   "load",
   () => (throttledCall = throttle(WebUI.Call, 10))

@@ -39,15 +39,6 @@ function resolveVecOpts(options, defVector)
   end
 end
 
-function emitEvent(...)
-  local args = {...}
-  if SharedUtils:IsClientModule() then
-    Events:Dispatch(table.unpack(args))
-  else
-    NetEvents:Broadcast(table.unpack(args))
-  end
-end
-
 -- 
 -- DebugGUIControl
 -- 
@@ -421,24 +412,24 @@ function DebugGUI.static:Vector(name, options, context, callback)
 end
 
 function DebugGUI.static:Vec2(name, options, context, callback)
-  local options = resolveVecOpts(options, Vec2(0, 0))
-  options.Type = DebugGUIControlType.Vec2
+  local opts = resolveVecOpts(options, Vec2(0, 0))
+  opts.Type = DebugGUIControlType.Vec2
 
-  return self:Vector(name, options, context, callback)
+  return self:Vector(name, opts, context, callback)
 end
 
 function DebugGUI.static:Vec3(name, options, context, callback)
-  local options = resolveVecOpts(options, Vec3(0, 0, 0))
-  options.Type = DebugGUIControlType.Vec3
+  local opts = resolveVecOpts(options, Vec3(0, 0, 0))
+  opts.Type = DebugGUIControlType.Vec3
 
-  return self:Vector(name, options, context, callback)
+  return self:Vector(name, opts, context, callback)
 end
 
 function DebugGUI.static:Vec4(name, options, context, callback)
-  local options = resolveVecOpts(options, Vec4(0, 0, 0, 0))
-  options.Type = DebugGUIControlType.Vec4
+  local opts = resolveVecOpts(options, Vec4(0, 0, 0, 0))
+  opts.Type = DebugGUIControlType.Vec4
 
-  return self:Vector(name, options, context, callback)
+  return self:Vector(name, opts, context, callback)
 end
 
 function DebugGUI.static:Print(str)
