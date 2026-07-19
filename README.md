@@ -35,7 +35,7 @@ end)
 
 ## API Reference
 
-Every control method returns a `DebugGUIControl` instance (see [Reading Control Values](#reading-control-values)).
+Every control method returns a `DebugGUIControl` instance (see [Reading and Writing Control Values](#reading-and-writing-control-values)).
 
 All controls accept an optional `context` parameter before the callback (see [Context](#context)).
 
@@ -217,9 +217,13 @@ DebugGUI:Folder("Weapons", function()
 end)
 ```
 
-## Reading Control Values
+## Reading and Writing Control Values
 
-Every control method returns a `DebugGUIControl` instance. Use `:Get()` to read its current value at any time.
+Every control method returns a `DebugGUIControl` instance.
+
+### Get
+
+Use `:Get()` to read its current value at any time.
 
 ```lua
 local healthSlider = DebugGUI:Range("Health", {DefValue = 100}, function(value, player)
@@ -233,6 +237,24 @@ local currentHealth = healthSlider:Get()
 ```
 
 Note: `:Get()` returns the value as last reported by the UI. It does not reflect external changes to the underlying game state.
+
+### Set
+
+Use `:Set(value)` to programmatically update a control's value from Lua. The UI widget updates immediately without firing the callback.
+
+```lua
+local healthSlider = DebugGUI:Range("Health", {DefValue = 100})
+healthSlider:Set(50)  -- slider jumps to 50 in the UI
+```
+
+For vector controls, pass a `Vec2`, `Vec3`, or `Vec4`:
+
+```lua
+local posControl = DebugGUI:Vec3("Position", Vec3(0, 0, 0))
+posControl:Set(Vec3(100, 200, 300))
+```
+
+Server-side `:Set()` broadcasts the new value to all connected clients automatically.
 
 ## Context
 
@@ -308,7 +330,6 @@ print(DebugGUIConfig.EnableMKBKey)
 ## Limitations
 
 - **No automatic sync.** When a control changes game state, you must sync that change to other clients yourself.
-- **Control values cannot be updated from Lua.** `:Get()` reads the last UI-reported value, but there is no `:Set()` to push a value back to the UI widget.
 - **Folders cannot be nested.**
 - **Controls persist across level loads.** They are rebuilt with `Clear()` first on `Level:Loaded`, so old controls won't duplicate — but if your mod dynamically creates controls based on map state, you should call `DebugGUI:Clear()` and re-register them on level change.
 - **Server-side controls are visible to all clients.** Client-side controls only appear for that client.

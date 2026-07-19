@@ -1,6 +1,7 @@
 import DebugGUIControlType from "../enums/DebugGUIControlType";
 import DebugGUIControl from "./DebugGUIControl";
 import { Pane, FolderApi } from "./TweakpaneShim";
+import type { InputBindingApi } from "./TweakpaneShim";
 
 type GUI = Pane | FolderApi;
 
@@ -9,6 +10,7 @@ export default class DebugGUIManager {
   private controls: DebugGUIControl[];
   private folders: { [name: string]: GUI };
   private datObj: { [name: string]: any };
+  private bindings: Map<string, InputBindingApi>;
   private container: HTMLElement;
 
   constructor() {
@@ -22,6 +24,7 @@ export default class DebugGUIManager {
     this.controls = [];
     this.folders = {};
     this.datObj = {};
+    this.bindings = new Map();
   }
 
   resolveGUI(controlData: Record<string, any>) {
@@ -49,23 +52,25 @@ export default class DebugGUIManager {
   }
 
   addCheckbox(gui: GUI, control: DebugGUIControl) {
-    gui
+    const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
       })
       .on("change", control.callback.bind(control));
+    this.bindings.set(control.id, binding);
   }
 
   addText(gui: GUI, control: DebugGUIControl) {
-    gui
+    const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
       })
       .on("change", control.callback.bind(control));
+    this.bindings.set(control.id, binding);
   }
 
   addNumber(gui: GUI, control: DebugGUIControl) {
-    gui
+    const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
         min: control.min,
@@ -73,10 +78,11 @@ export default class DebugGUIManager {
         step: control.step,
       })
       .on("change", control.callback.bind(control));
+    this.bindings.set(control.id, binding);
   }
 
   addRange(gui: GUI, control: DebugGUIControl) {
-    gui
+    const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
         min: control.min ?? 0,
@@ -85,6 +91,7 @@ export default class DebugGUIManager {
         slider: true,
       })
       .on("change", control.callback.bind(control));
+    this.bindings.set(control.id, binding);
   }
 
   addDropdown(gui: GUI, control: DebugGUIControl) {
@@ -92,21 +99,23 @@ export default class DebugGUIManager {
       ? Object.fromEntries(control.values.map((v) => [String(v), v]))
       : (control.values as Record<string, any>) ?? {};
 
-    gui
+    const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
         options,
       })
       .on("change", control.callback.bind(control));
+    this.bindings.set(control.id, binding);
   }
 
   addVector(gui: GUI, control: DebugGUIControl) {
-    gui
+    const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
         ...control.axes,
       })
       .on("change", control.callback.bind(control));
+    this.bindings.set(control.id, binding);
   }
 
   addControl(controlData: Record<string, any>) {
@@ -146,10 +155,17 @@ export default class DebugGUIManager {
     return window.getComputedStyle(this.container, null).display === "none";
   }
 
+  setControlValue(data: { id: string; value: any }) {
+    const binding = this.bindings.get(data.id);
+    if (!binding) return;
+    binding.setValue(data.value);
+  }
+
   clearControls() {
     this.controls = [];
     this.folders = {};
     this.datObj = {};
+    this.bindings = new Map();
     this.gui.dispose();
     this.gui = new Pane({
       title: "DebugGUI",
