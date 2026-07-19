@@ -103,6 +103,28 @@ function DebugGUIControl:ConvertValue(value)
   return value
 end
 
+function DebugGUIControl:ValueToSerializable(value)
+  if self.type == DebugGUIControlType.Vec2 then
+    return {x = value.x, y = value.y}
+  elseif self.type == DebugGUIControlType.Vec3 then
+    return {x = value.x, y = value.y, z = value.z}
+  elseif self.type == DebugGUIControlType.Vec4 then
+    return {x = value.x, y = value.y, z = value.z, w = value.w}
+  end
+
+  return value
+end
+
+function DebugGUIControl:Set(value)
+  self.lastValue = self:ConvertValue(value)
+
+  if self.isClient then
+    Events:Dispatch("DBGUI:SetValue", self.id:ToString("D"), self:ValueToSerializable(value))
+  else
+    NetEvents:Broadcast("DBGUI:SetValue.Net", self.id:ToString("D"), self:ValueToSerializable(value))
+  end
+end
+
 function DebugGUIControl:Get()
   return self.lastValue
 end

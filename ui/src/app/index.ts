@@ -6,6 +6,7 @@ declare global {
     clearControls: Function;
     showUI: Function;
     hideUI: Function;
+    setControlValue: Function;
   }; }
 }
 
@@ -16,6 +17,7 @@ const vext = {
   clearControls: manager.clearControls.bind(manager),
   showUI: manager.showUI.bind(manager),
   hideUI: manager.hideUI.bind(manager),
+  setControlValue: manager.setControlValue.bind(manager),
 };
 
 window.vext = vext;

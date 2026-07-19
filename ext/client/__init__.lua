@@ -64,5 +64,14 @@ NetEvents:Subscribe("DBGUI:ShowUI", ShowUI)
 Events:Subscribe("DBGUI:HideUI", HideUI)
 NetEvents:Subscribe("DBGUI:HideUI", HideUI)
 
+function OnSetValue(id, value)
+  WebUI:ExecuteJS("vext.setControlValue(" .. json.encode({id = id, value = value}) .. ")")
+end
+
+Events:Subscribe("DBGUI:SetValue", OnSetValue)
+NetEvents:Subscribe("DBGUI:SetValue.Net", function(player, id, value)
+  OnSetValue(id, value)
+end)
+
 Events:Subscribe("DBGUI:Show", OnShow)
 NetEvents:Subscribe("DBGUI:Show.Net", OnShow)

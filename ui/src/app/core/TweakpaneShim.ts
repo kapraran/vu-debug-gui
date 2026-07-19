@@ -462,7 +462,27 @@ class InputBindingApi {
   readonly element: HTMLElement;
   private changeHandlers = new Set<(ev: { value: any }) => void>();
 
+  private _obj: Record<string, any>;
+  private _key: string;
+  private _kind: 'checkbox' | 'text' | 'number' | 'range' | 'dropdown' | 'vector';
+
+  private _boxEl?: HTMLElement;
+  private _inputEl?: HTMLInputElement;
+  private _fillEl?: HTMLElement;
+  private _thumbEl?: HTMLElement;
+  private _valueDisplayEl?: HTMLElement;
+  private _currentValue?: number;
+  private _rangeMin?: number;
+  private _rangeMax?: number;
+  private _formatValueFn?: (val: number) => string;
+  private _dropdownOptionsMap?: Record<string, any>;
+  private _headerValueEl?: HTMLElement;
+  private _optionsContainerEl?: HTMLElement;
+  private _axisInputs?: { axis: string; input: HTMLInputElement }[];
+
   constructor(doc: Document, obj: Record<string, any>, key: string, params?: InputBindingParams) {
+    this._obj = obj;
+    this._key = key;
     this.element = doc.createElement("div");
     this.element.className = "shim-input";
 
@@ -479,6 +499,7 @@ class InputBindingApi {
     }
 
     if (typeof value === "boolean") {
+      this._kind = "checkbox";
       this.element.classList.add("shim-input-clickable");
 
       const spacer = doc.createElement("div");
@@ -487,6 +508,7 @@ class InputBindingApi {
       const box = doc.createElement("div");
       box.className = "shim-checkbox-box";
       if (value) box.classList.add("checked");
+      this._boxEl = box;
 
       const check = doc.createElement("span");
       check.className = "shim-checkbox-check";
@@ -514,9 +536,11 @@ class InputBindingApi {
         this.changeHandlers.forEach((h) => h({ value: checked }));
       });
     } else if (isDropdown && params.options) {
+      this._kind = "dropdown";
       ensureDropdownListener(doc);
 
       const options = normalizeOptions(params.options);
+      this._dropdownOptionsMap = options;
       const keys = Object.keys(options);
       const currentKey = findKeyByValue(options, value);
       const currentValue = currentKey ?? String(value ?? keys[0] ?? "");
@@ -530,6 +554,7 @@ class InputBindingApi {
       const headerValue = doc.createElement("span");
       headerValue.className = "shim-dropdown-header-value";
       headerValue.textContent = currentValue;
+      this._headerValueEl = headerValue;
 
       const arrow = doc.createElement("span");
       arrow.className = "shim-dropdown-header-arrow";
@@ -540,6 +565,7 @@ class InputBindingApi {
 
       const optionsContainer = doc.createElement("div");
       optionsContainer.className = "shim-dropdown-options";
+      this._optionsContainerEl = optionsContainer;
 
       for (const optKey of keys) {
         const opt = doc.createElement("div");
@@ -567,11 +593,13 @@ class InputBindingApi {
 
       this.element.appendChild(wrapper);
     } else if (isVector) {
+      this._kind = "vector";
       const axes = ["x", "y", "z", "w"].filter((a) => a in params) as string[];
       if (!obj[key] || typeof obj[key] !== "object") obj[key] = {};
 
       const container = doc.createElement("div");
       container.className = "shim-vector-row";
+      this._axisInputs = [];
 
       for (const axis of axes) {
         const axisEl = doc.createElement("div");
@@ -599,6 +627,8 @@ class InputBindingApi {
           }
         });
 
+        this._axisInputs.push({ axis, input: inputEl });
+
         inputWrapper.append(axisLabel, inputEl);
         axisEl.appendChild(inputWrapper);
         container.appendChild(axisEl);
@@ -606,11 +636,14 @@ class InputBindingApi {
 
       this.element.appendChild(container);
     } else if (isRange) {
+      this._kind = "range";
       const min = params.min as number;
+      this._rangeMin = min;
       const max = params.max as number;
+      this._rangeMax = max;
       const step = (params.step as number) ?? 1;
       const decimals = stepDecimals(step);
-      let currentValue = (value ?? min) as number;
+      this._currentValue = (value ?? min) as number;
 
       const wrapper = doc.createElement("div");
       wrapper.className = "shim-slider-wrapper";
@@ -620,17 +653,21 @@ class InputBindingApi {
 
       const fill = doc.createElement("div");
       fill.className = "shim-slider-fill";
+      this._fillEl = fill;
 
       const thumb = doc.createElement("div");
       thumb.className = "shim-slider-thumb";
+      this._thumbEl = thumb;
 
       wrapper.append(track, fill, thumb);
 
       const valueDisplay = doc.createElement("span");
       valueDisplay.className = "shim-slider-value shim-well";
+      this._valueDisplayEl = valueDisplay;
 
       const formatValue = (val: number) =>
         decimals > 0 ? val.toFixed(decimals) : String(Math.round(val));
+      this._formatValueFn = formatValue;
 
       const updateSlider = (val: number) => {
         const pct = Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100));
@@ -654,8 +691,8 @@ class InputBindingApi {
       const onMove = (e: MouseEvent) => {
         if (!dragging) return;
         const val = getValue(e.clientX);
-        if (val !== currentValue) {
-          currentValue = val;
+        if (val !== this._currentValue) {
+          this._currentValue = val;
           updateSlider(val);
           obj[key] = val;
           this.changeHandlers.forEach((h) => h({ value: val }));
@@ -671,7 +708,7 @@ class InputBindingApi {
       wrapper.addEventListener("mousedown", (e: MouseEvent) => {
         dragging = true;
         const val = getValue(e.clientX);
-        currentValue = val;
+        this._currentValue = val;
         updateSlider(val);
         obj[key] = val;
         this.changeHandlers.forEach((h) => h({ value: val }));
@@ -679,11 +716,13 @@ class InputBindingApi {
         doc.addEventListener("mouseup", onUp);
       });
 
-      updateSlider(currentValue);
+      updateSlider(this._currentValue);
       this.element.append(wrapper, valueDisplay);
     } else {
       const numeric = typeof value === "number";
+      this._kind = numeric ? "number" : "text";
       const inputEl = doc.createElement("input");
+      this._inputEl = inputEl;
       inputEl.className = (numeric ? "shim-input-number" : "shim-input-text") + " shim-well";
       inputEl.type = "text";
       if (numeric) inputEl.inputMode = "decimal";
@@ -712,6 +751,40 @@ class InputBindingApi {
           this.changeHandlers.forEach((h) => h({ value: inputEl.value }));
         }
       });
+    }
+  }
+
+  setValue(value: any): void {
+    this._obj[this._key] = value;
+
+    if (this._kind === "checkbox" && this._boxEl) {
+      this._boxEl.classList.toggle("checked", !!value);
+    } else if (this._kind === "text" && this._inputEl) {
+      this._inputEl.value = String(value ?? "");
+    } else if (this._kind === "number" && this._inputEl) {
+      this._inputEl.value = String(value ?? "");
+    } else if (this._kind === "range" && this._fillEl && this._thumbEl && this._valueDisplayEl && this._formatValueFn) {
+      this._currentValue = value as number;
+      const min = this._rangeMin ?? 0;
+      const max = this._rangeMax ?? 1;
+      const pct = Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100));
+      this._fillEl.style.width = pct + "%";
+      this._thumbEl.style.left = pct + "%";
+      this._valueDisplayEl.textContent = this._formatValueFn(value);
+    } else if (this._kind === "dropdown" && this._headerValueEl && this._optionsContainerEl && this._dropdownOptionsMap) {
+      const newKey = findKeyByValue(this._dropdownOptionsMap, value);
+      if (newKey != null) {
+        this._headerValueEl.textContent = newKey;
+        const options = this._optionsContainerEl.querySelectorAll(".shim-dropdown-option");
+        for (const opt of options) {
+          delete (opt as HTMLElement).dataset.selected;
+          if (opt.textContent === newKey) (opt as HTMLElement).dataset.selected = "true";
+        }
+      }
+    } else if (this._kind === "vector" && this._axisInputs && typeof value === "object") {
+      for (const { axis, input } of this._axisInputs) {
+        if (axis in value) input.value = String(value[axis] ?? "");
+      }
     }
   }
 
