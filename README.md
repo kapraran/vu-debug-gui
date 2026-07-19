@@ -1,14 +1,16 @@
 # Venice Unleashed DebugGUI
 
-A framework for creating debug controls from your client and server scripts — no custom WebUI needed.
+A framework for creating debug controls from your client and server scripts. The WebUI is included.
 
 ![](./.github/debug-gui-screen.webp)
+
+Find the latest version (with the prebuilt UI) on the [releases page](https://github.com/kapraran/vu-debug-gui/releases).
 
 ## Quick Start
 
 1. Add this mod to your server's `ModList`.
 2. Copy `ext/shared/DebugGUI.lua` into your mod's `ext/shared/` folder.
-3. `require "__shared/DebugGUI"` at the top of your scripts and start adding controls.
+3. `require "__shared/DebugGUI"` at the top of your scripts.
 4. Press **F1** in-game to toggle the panel.
 
 ```lua
@@ -35,9 +37,25 @@ end)
 
 ## API Reference
 
-Every control method returns a `DebugGUIControl` instance (see [Reading and Writing Control Values](#reading-and-writing-control-values)).
+Every method returns a `DebugGUIControl` instance (see [Reading and Writing Values](#reading-and-writing-values)).
 
-All controls accept an optional `context` parameter before the callback (see [Context](#context)).
+All methods accept an optional `context` parameter before the callback (see [Context](#context)).
+
+### Quick Reference
+
+| Method | Description |
+|--------|-------------|
+| [`Button`](#button) | Fires callback on click |
+| [`Checkbox`](#checkbox) | True/false toggle |
+| [`Text`](#text) | Free-text input |
+| [`Number`](#number) | Numeric input with min/max/step |
+| [`Range`](#range-slider) | Slider with min/max/step |
+| [`Dropdown`](#dropdown) | Selection from a list |
+| [`Vec2 / Vec3 / Vec4`](#vec2--vec3--vec4) | Vector input with per-axis constraints |
+| [`Folder`](#folder) | Collapsible group of controls |
+| [`Remove(id)`](#remove) | Remove a control by GUID |
+| [`Clear()`](#clear) | Remove all controls |
+| [`ShowUI(player)` / `HideUI(player)`](#ui-visibility) | Toggle panel programmatically |
 
 ### Callback Signature
 
@@ -54,7 +72,7 @@ When a control's value changes, your callback fires:
 DebugGUI:Button(name, [context,] callback)
 ```
 
-Does not have a value — the callback fires on click with no `value` argument.
+Does not have a value. The callback fires on click with no `value` argument.
 
 ```lua
 DebugGUI:Button("Heal All", function(_, player)
@@ -107,7 +125,7 @@ options = {
 }
 ```
 
-`Min`, `Max`, and `Step` are enforced on blur — values are clamped to the range and rounded to the nearest step increment.
+`Min`, `Max`, and `Step` are enforced on blur. Values are clamped to the range and rounded to the nearest step increment.
 
 ```lua
 -- Simple: just a default
@@ -217,7 +235,7 @@ DebugGUI:Folder("Weapons", function()
 end)
 ```
 
-## Reading and Writing Control Values
+## Reading and Writing Values
 
 Every control method returns a `DebugGUIControl` instance.
 
@@ -316,22 +334,26 @@ Edit `ext/shared/config.lua`:
 ```lua
 DebugGUIConfig = {
   EnableMKBKey = InputDeviceKeys.IDK_F1,   -- key to toggle the panel
-  ClickToDisableMKB = true                 -- TODO
 }
 ```
 
-Require the config if your mod needs to read or change these values:
+## Development
 
-```lua
-require "__shared/config"
-print(DebugGUIConfig.EnableMKBKey)
+To customize the WebUI, edit files in `ui/` then rebuild:
+
+```bash
+cd ui
+npm ci
+npm run build
 ```
+
+The output goes to `ui/dist/` and is bundled into `ui.vuic`.
 
 ## Limitations
 
 - **No automatic sync.** When a control changes game state, you must sync that change to other clients yourself.
 - **Folders cannot be nested.**
-- **Controls persist across level loads.** They are rebuilt with `Clear()` first on `Level:Loaded`, so old controls won't duplicate — but if your mod dynamically creates controls based on map state, you should call `DebugGUI:Clear()` and re-register them on level change.
+- **Controls persist across level loads.** The mod clears them on `Level:Loaded`, but if your mod creates them dynamically based on map state, re-register them on level change.
 - **Server-side controls are visible to all clients.** Client-side controls only appear for that client.
 
 ## License
