@@ -114,9 +114,9 @@ export const CSS_CONTENT = `
   transform: rotate(90deg);
 }
 .shim-folder-content {
-  border-left: 1px solid rgba(255,255,255,0.06);
-  margin: 4px 0 4px 6px;
-  padding: 6px 4px 6px 8px;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  margin: 4px 0 4px 10px;
+  padding: 6px 4px 6px 12px;
 }
 .shim-folder-content > * + * {
   margin-top: 6px;

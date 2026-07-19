@@ -30,15 +30,20 @@ export default class DebugGUIManager {
 
   resolveGUI(controlData: ControlData): GUI {
     let gui: GUI = this.gui;
+    const folder = controlData.Folder;
+    if (folder == null) return gui;
 
-    if ("Folder" in controlData && controlData.Folder != null) {
-      if (!(controlData.Folder in this.folders)) {
-        this.folders[controlData.Folder] = this.gui.addFolder({
-          title: controlData.Folder,
-        });
+    const segments = folder.split("/");
+    let currentPath = "";
+
+    for (const segment of segments) {
+      currentPath = currentPath ? `${currentPath}/${segment}` : segment;
+
+      if (!(currentPath in this.folders)) {
+        this.folders[currentPath] = gui.addFolder({ title: segment });
       }
 
-      gui = this.folders[controlData.Folder];
+      gui = this.folders[currentPath];
     }
 
     return gui;

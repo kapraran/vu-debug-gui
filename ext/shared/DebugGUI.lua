@@ -133,7 +133,7 @@ function DebugGUIManager:__init()
   self.controls = {}
 
   self.__controlsRequested = false
-  self.__addInFolder = nil
+  self.__folderStack = {}
 
   self:RegisterEvents()
 end
@@ -168,8 +168,8 @@ function DebugGUIManager:Add(control)
     return nil
   end
 
-  if self.__addInFolder ~= nil then
-    control.folder = self.__addInFolder
+  if #self.__folderStack > 0 then
+    control.folder = table.concat(self.__folderStack, "/")
   end
 
   self.controls[control.id:ToString("D")] = control
@@ -183,14 +183,10 @@ function DebugGUIManager:Add(control)
 end
 
 function DebugGUIManager:Folder(name, options, callback)
-  if self.__addInFolder ~= nil then
-    return
-  end
-
   options = options or {}
-  self.__addInFolder = name
+  table.insert(self.__folderStack, name)
   callback(options.context)
-  self.__addInFolder = nil
+  table.remove(self.__folderStack)
 end
 
 function DebugGUIManager:OnRequestControls()
