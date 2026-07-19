@@ -44,7 +44,7 @@ export default class DebugGUIManager {
     return gui;
   }
 
-  addButton(gui: GUI, control: DebugGUIControl) {
+  addButton(gui: GUI, control: DebugGUIControl): void {
     gui
       .addButton({
         title: control.name,
@@ -52,7 +52,7 @@ export default class DebugGUIManager {
       .on("click", () => control.callback({}));
   }
 
-  addCheckbox(gui: GUI, control: DebugGUIControl) {
+  addCheckbox(gui: GUI, control: DebugGUIControl): void {
     const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
@@ -61,7 +61,7 @@ export default class DebugGUIManager {
     this.bindings.set(control.id, binding);
   }
 
-  addText(gui: GUI, control: DebugGUIControl) {
+  addText(gui: GUI, control: DebugGUIControl): void {
     const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
@@ -70,7 +70,7 @@ export default class DebugGUIManager {
     this.bindings.set(control.id, binding);
   }
 
-  addNumber(gui: GUI, control: DebugGUIControl) {
+  addNumber(gui: GUI, control: DebugGUIControl): void {
     const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
@@ -82,7 +82,7 @@ export default class DebugGUIManager {
     this.bindings.set(control.id, binding);
   }
 
-  addRange(gui: GUI, control: DebugGUIControl) {
+  addRange(gui: GUI, control: DebugGUIControl): void {
     const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
@@ -95,10 +95,10 @@ export default class DebugGUIManager {
     this.bindings.set(control.id, binding);
   }
 
-  addDropdown(gui: GUI, control: DebugGUIControl) {
+  addDropdown(gui: GUI, control: DebugGUIControl): void {
     const options = Array.isArray(control.values)
       ? Object.fromEntries(control.values.map((v) => [String(v), v]))
-      : (control.values as Record<string, any>) ?? {};
+      : (control.values as Record<string, unknown>) ?? {};
 
     const binding = gui
       .addBinding(this.datObj, control.id, {
@@ -109,7 +109,7 @@ export default class DebugGUIManager {
     this.bindings.set(control.id, binding);
   }
 
-  addVector(gui: GUI, control: DebugGUIControl) {
+  addVector(gui: GUI, control: DebugGUIControl): void {
     const binding = gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
@@ -143,7 +143,7 @@ export default class DebugGUIManager {
     for (const control of controlsData) this.addControl(control);
   }
 
-  isHidden() {
+  isHidden(): boolean {
     return window.getComputedStyle(this.container, null).display === "none";
   }
 
@@ -153,7 +153,7 @@ export default class DebugGUIManager {
     binding.setValue(data.value);
   }
 
-  clearControls() {
+  clearControls(): void {
     this.controls = [];
     this.folders = {};
     this.datObj = {};
@@ -165,11 +165,11 @@ export default class DebugGUIManager {
     });
   }
 
-  showUI() {
+  showUI(): void {
     if (this.isHidden()) this.container.style.display = "flex";
   }
 
-  hideUI() {
+  hideUI(): void {
     if (!this.isHidden()) this.container.style.display = "none";
   }
 }

@@ -3,7 +3,7 @@ import { WidgetContainer } from "./WidgetContainer";
 export class FolderApi extends WidgetContainer {
   readonly element: HTMLElement;
   protected contentEl: HTMLElement;
-  private _expanded = true;
+  private expanded = true;
 
   constructor(title: string | undefined, doc: Document) {
     super();
@@ -23,9 +23,9 @@ export class FolderApi extends WidgetContainer {
 
       titleEl.append(chevron, titleText);
       titleEl.addEventListener("click", () => {
-        this._expanded = !this._expanded;
-        this.element.classList.toggle("expanded", this._expanded);
-        this.contentEl.style.display = this._expanded ? "" : "none";
+        this.expanded = !this.expanded;
+        this.element.classList.toggle("expanded", this.expanded);
+        this.contentEl.style.display = this.expanded ? "" : "none";
       });
       this.element.appendChild(titleEl);
     }
