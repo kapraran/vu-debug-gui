@@ -9,7 +9,7 @@ export function createSliderElement(
   step: number,
   currentValue: number,
   onChange: (value: number) => void,
-): [wrapper: HTMLElement, valueDisplay: HTMLElement] {
+): { wrapper: HTMLElement; valueDisplay: HTMLElement; update: (value: number) => void } {
   const decimals = stepDecimals(step);
 
   const wrapper = doc.createElement("div");
@@ -81,5 +81,11 @@ export function createSliderElement(
 
   updateSlider(currentValue);
 
-  return [wrapper, valueDisplay];
+  const update = (val: number) => {
+    currentValue = val;
+    updateSlider(val);
+    obj[key] = val;
+  };
+
+  return { wrapper, valueDisplay, update };
 }

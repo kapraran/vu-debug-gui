@@ -14,7 +14,7 @@ export function createNumberElement(
   value: number,
   constraints: NumberConstraints,
   onChange: (value: number) => void,
-): HTMLElement {
+): { element: HTMLElement; update: (value: number) => void } {
   const { min, max, step } = constraints;
   const inputEl = doc.createElement("input");
   inputEl.className = "shim-input-number shim-well";
@@ -41,5 +41,10 @@ export function createNumberElement(
     }
   });
 
-  return inputEl;
+  const update = (val: number) => {
+    inputEl.value = String(val);
+    obj[key] = val;
+  };
+
+  return { element: inputEl, update };
 }

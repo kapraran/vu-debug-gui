@@ -10,17 +10,17 @@ export interface ControlData {
 }
 
 export interface AxisOptions {
-  Min?: number;
-  Max?: number;
-  Step?: number;
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
 export interface ControlOptions {
-  DefValue?: unknown;
-  Min?: number;
-  Max?: number;
-  Step?: number;
-  Values?: unknown[] | Record<string, unknown>;
+  value?: unknown;
+  min?: number;
+  max?: number;
+  step?: number;
+  values?: unknown[] | Record<string, unknown>;
   x?: AxisOptions;
   y?: AxisOptions;
   z?: AxisOptions;

@@ -6,7 +6,7 @@ export function createTextElement(
   key: string,
   value: string,
   onChange: (value: string) => void,
-): HTMLElement {
+): { element: HTMLElement; update: (value: string) => void } {
   const inputEl = doc.createElement("input");
   inputEl.className = "shim-input-text shim-well";
   inputEl.type = "text";
@@ -19,5 +19,10 @@ export function createTextElement(
     onChange(inputEl.value);
   });
 
-  return inputEl;
+  const update = (val: string) => {
+    inputEl.value = String(val);
+    obj[key] = val;
+  };
+
+  return { element: inputEl, update };
 }

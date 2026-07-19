@@ -8,12 +8,14 @@ export function createVectorElement(
   key: string,
   axes: Record<string, AxisParams>,
   onChange: (value: unknown) => void,
-): HTMLElement {
+): { element: HTMLElement; update: (value: Record<string, unknown>) => void } {
   const axisNames = Object.keys(axes);
   if (!obj[key] || typeof obj[key] !== "object") obj[key] = {};
 
   const container = doc.createElement("div");
   container.className = "shim-vector-row";
+
+  const axisInputs: Record<string, HTMLInputElement> = {};
 
   for (const axis of axisNames) {
     const axisEl = doc.createElement("div");
@@ -31,6 +33,8 @@ export function createVectorElement(
     inputEl.inputMode = "decimal";
     inputEl.value = String((obj[key] as Record<string, unknown>)[axis] ?? "");
 
+    axisInputs[axis] = inputEl;
+
     wireKeyboard(inputEl);
     inputEl.addEventListener("change", () => {
       const raw = inputEl.value;
@@ -47,5 +51,14 @@ export function createVectorElement(
     container.appendChild(axisEl);
   }
 
-  return container;
+  const update = (val: Record<string, unknown>) => {
+    obj[key] = val;
+    for (const axis of axisNames) {
+      if (axisInputs[axis]) {
+        axisInputs[axis].value = String((val as Record<string, unknown>)[axis] ?? "");
+      }
+    }
+  };
+
+  return { element: container, update };
 }

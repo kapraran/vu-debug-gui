@@ -4,7 +4,7 @@ export function createCheckboxElement(
   key: string,
   value: boolean,
   onChange: (value: boolean) => void,
-): HTMLElement {
+): { element: HTMLElement; update: (value: boolean) => void } {
   const element = doc.createElement("div");
   element.classList.add("shim-input", "shim-input-clickable");
 
@@ -41,5 +41,10 @@ export function createCheckboxElement(
     onChange(checked);
   });
 
-  return element;
+  const update = (val: boolean) => {
+    box.classList.toggle("checked", val);
+    obj[key] = val;
+  };
+
+  return { element, update };
 }

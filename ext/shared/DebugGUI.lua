@@ -18,25 +18,15 @@ DebugGUIControlType = {
 
 function SetDefaultNumOpts(numOpts, skipDefault)
   numOpts = numOpts or {}
-  numOpts.Min = (numOpts.Min ~= nil and numOpts.Min) or 0
-  numOpts.Max = (numOpts.Max ~= nil and numOpts.Max) or 1
-  numOpts.Step = numOpts.Step
+  numOpts.min = (numOpts.min ~= nil and numOpts.min) or 0
+  numOpts.max = (numOpts.max ~= nil and numOpts.max) or 1
+  numOpts.step = numOpts.step
 
   if not skipDefault then
-    numOpts.DefValue = numOpts.DefValue or numOpts.Min
+    numOpts.value = numOpts.value or numOpts.min
   end
 
   return numOpts
-end
-
-function resolveVecOpts(options, defVector)
-  if options == nil then
-    return {DefValue = defVector}
-  elseif type(options.x) == 'number' then
-    return {DefValue = options}
-  else
-    return options
-  end
 end
 
 -- 
@@ -47,21 +37,18 @@ class "DebugGUIControl"
 
 DebugGUIControl.static.OrderIndex = 1
 
-function DebugGUIControl:__init(_type, name, options, context, callback)
-  if callback == nil then
-    callback = context
-    context = nil
-  end
+function DebugGUIControl:__init(_type, name, options, callback)
+  options = options or {}
 
   self.id = MathUtils:RandomGuid()
   self.type = _type
   self.name = name
   self.options = options
-  self.context = context
+  self.context = options.context
   self.callback = callback
   self.isClient = SharedUtils:IsClientModule()
 
-  self.lastValue = options.DefValue
+  self.lastValue = options.value
   self.folder = nil
   self.order = DebugGUIControl.OrderIndex
 
@@ -106,13 +93,18 @@ function DebugGUIControl:ValueToSerializable(value)
   return value
 end
 
-function DebugGUIControl:Set(value)
+function DebugGUIControl:Set(value, player)
   self.lastValue = self:ConvertValue(value)
 
+  local serialized = self:ValueToSerializable(value)
+  local idStr = self.id:ToString("D")
+
   if self.isClient then
-    Events:Dispatch("DBGUI:SetValue", self.id:ToString("D"), self:ValueToSerializable(value))
+    Events:Dispatch("DBGUI:SetValue", idStr, serialized)
+  elseif player ~= nil then
+    NetEvents:SendTo("DBGUI:SetValue.Net", player, idStr, serialized)
   else
-    NetEvents:Broadcast("DBGUI:SetValue.Net", self.id:ToString("D"), self:ValueToSerializable(value))
+    NetEvents:Broadcast("DBGUI:SetValue.Net", idStr, serialized)
   end
 end
 
@@ -190,24 +182,14 @@ function DebugGUIManager:Add(control)
   return control
 end
 
-function DebugGUIManager:Folder(name, context, callback)
-  -- avoid nested folders
+function DebugGUIManager:Folder(name, options, callback)
   if self.__addInFolder ~= nil then
     return
   end
 
-  -- swap callback-context if needed
-  if callback == nil then
-    if context == nil then
-      return
-    end
-
-    callback = context
-    context = nil
-  end
-
+  options = options or {}
   self.__addInFolder = name
-  callback(context)
+  callback(options.context)
   self.__addInFolder = nil
 end
 
@@ -223,13 +205,11 @@ function DebugGUIManager:Show(clear)
 
   clear = clear == true
 
-  -- convert to array
   local controlsOrdered = {}
   for _, control in pairs(self.controls) do
     table.insert(controlsOrdered, control)
   end
 
-  -- sort based on .order
   table.sort(controlsOrdered, function(controlA, controlB)
     return controlA.order < controlB.order
   end)
@@ -282,96 +262,84 @@ local debugGUIManager = DebugGUIManager()
 
 class "DebugGUI"
 
-function DebugGUI.static:Button(name, context, callback)
+function DebugGUI.static:Button(name, options, callback)
   local control = DebugGUIControl(
     DebugGUIControlType.Button,
     name,
-    {},
-    context,
+    options or {},
     callback
   )
 
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI.static:Checkbox(name, defValue, context, callback)
+function DebugGUI.static:Checkbox(name, options, callback)
+  options = options or {}
+
   local control = DebugGUIControl(
     DebugGUIControlType.Checkbox,
     name,
-    {
-      DefValue = defValue
-    },
-    context,
+    options,
     callback
   )
 
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI.static:Text(name, defValue, context, callback)
+function DebugGUI.static:Text(name, options, callback)
+  options = options or {}
+
   local control = DebugGUIControl(
     DebugGUIControlType.Text,
     name,
-    {
-      DefValue = defValue
-    },
-    context,
+    options,
     callback
   )
 
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI.static:Number(name, options, context, callback)
-  if type(options) == 'number' or type(options) == 'string' then
-    options = { DefValue = options }
-  end
-
+function DebugGUI.static:Number(name, options, callback)
+  options = options or {}
   options = SetDefaultNumOpts(options)
 
   local control = DebugGUIControl(
     DebugGUIControlType.Number,
     name,
     options,
-    context,
     callback
   )
 
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI.static:Range(name, options, context, callback)
+function DebugGUI.static:Range(name, options, callback)
   options = options or {}
-
-  -- defaults
   options = SetDefaultNumOpts(options)
 
   local control = DebugGUIControl(
     DebugGUIControlType.Range,
     name,
     options,
-    context,
     callback
   )
 
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI.static:Dropdown(name, options, context, callback)
+function DebugGUI.static:Dropdown(name, options, callback)
   options = options or {}
 
-  if options.Values == nil then
-    error("Dropdown requires a Values table")
+  if options.values == nil then
+    error("Dropdown requires a values table")
   end
 
-  if options.DefValue == nil then
-    if type(options.Values) == 'table' and options.Values[1] ~= nil then
-      -- array-style: use first element
-      options.DefValue = options.Values[1]
+  if options.value == nil then
+    if type(options.values) == 'table' and options.values[1] ~= nil then
+      options.value = options.values[1]
     else
-      -- key-value table: pick the first pair
-      for _, value in pairs(options.Values) do
-        options.DefValue = value
+      for _, v in pairs(options.values) do
+        options.value = v
         break
       end
     end
@@ -381,63 +349,65 @@ function DebugGUI.static:Dropdown(name, options, context, callback)
     DebugGUIControlType.Dropdown,
     name,
     options,
-    context,
     callback
   )
 
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI.static:Vector(name, options, context, callback)
-  -- defaults
+function DebugGUI.static:Vector(name, options, callback)
   options.x = SetDefaultNumOpts(options.x, true)
   options.y = SetDefaultNumOpts(options.y, true)
 
-  if options.Type ~= DebugGUIControlType.Vec2 then
+  if options.type ~= DebugGUIControlType.Vec2 then
     options.z = SetDefaultNumOpts(options.z, true)
   end
-  if options.Type == DebugGUIControlType.Vec4 then
+  if options.type == DebugGUIControlType.Vec4 then
     options.w = SetDefaultNumOpts(options.w, true)
   end
 
+  local controlType = options.type
+  options.type = nil
+
   local control = DebugGUIControl(
-    options.Type,
+    controlType,
     name,
     options,
-    context,
     callback
   )
 
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI.static:Vec2(name, options, context, callback)
-  local opts = resolveVecOpts(options, Vec2(0, 0))
-  opts.Type = DebugGUIControlType.Vec2
+function DebugGUI.static:Vec2(name, options, callback)
+  options = options or {}
+  if options.value == nil then options.value = Vec2(0, 0) end
+  options.type = DebugGUIControlType.Vec2
 
-  return self:Vector(name, opts, context, callback)
+  return self:Vector(name, options, callback)
 end
 
-function DebugGUI.static:Vec3(name, options, context, callback)
-  local opts = resolveVecOpts(options, Vec3(0, 0, 0))
-  opts.Type = DebugGUIControlType.Vec3
+function DebugGUI.static:Vec3(name, options, callback)
+  options = options or {}
+  if options.value == nil then options.value = Vec3(0, 0, 0) end
+  options.type = DebugGUIControlType.Vec3
 
-  return self:Vector(name, opts, context, callback)
+  return self:Vector(name, options, callback)
 end
 
-function DebugGUI.static:Vec4(name, options, context, callback)
-  local opts = resolveVecOpts(options, Vec4(0, 0, 0, 0))
-  opts.Type = DebugGUIControlType.Vec4
+function DebugGUI.static:Vec4(name, options, callback)
+  options = options or {}
+  if options.value == nil then options.value = Vec4(0, 0, 0, 0) end
+  options.type = DebugGUIControlType.Vec4
 
-  return self:Vector(name, opts, context, callback)
+  return self:Vector(name, options, callback)
 end
 
 function DebugGUI.static:Print(str)
-  -- TODO
 end
 
-function DebugGUI.static:Folder(name, context, callback)
-  debugGUIManager:Folder(name, context, callback)
+function DebugGUI.static:Folder(name, options, callback)
+  debugGUIManager:Folder(name, options, callback)
 end
 
 function DebugGUI.static:Remove(id)

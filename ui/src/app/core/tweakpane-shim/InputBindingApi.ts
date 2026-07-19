@@ -11,6 +11,7 @@ export class InputBindingApi {
   private changeHandlers = new Set<(ev: { value: unknown }) => void>();
   private obj: Record<string, unknown>;
   private key: string;
+  private updateWidget: ((value: unknown) => void) | null = null;
 
   constructor(doc: Document, obj: Record<string, unknown>, key: string, params?: InputBindingParams) {
     this.obj = obj;
@@ -35,33 +36,39 @@ export class InputBindingApi {
     };
 
     if (typeof value === "boolean") {
-      const el = createCheckboxElement(doc, obj, key, value, emitChange);
-      this.element.appendChild(el);
+      const result = createCheckboxElement(doc, obj, key, value, emitChange);
+      this.element.appendChild(result.element);
+      this.updateWidget = (v) => result.update(v as boolean);
     } else if (isDropdown && params.options) {
-      const el = createDropdownElement(doc, obj, key, params.options, value, emitChange);
-      this.element.appendChild(el);
+      const result = createDropdownElement(doc, obj, key, params.options, value, emitChange);
+      this.element.appendChild(result.element);
+      this.updateWidget = result.update;
     } else if (isVector) {
       const axes: Record<string, { min?: number; max?: number; step?: number }> = {};
       if (params.x) axes.x = params.x;
       if (params.y) axes.y = params.y;
       if (params.z) axes.z = params.z;
       if (params.w) axes.w = params.w;
-      const el = createVectorElement(doc, obj, key, axes, emitChange);
-      this.element.appendChild(el);
+      const result = createVectorElement(doc, obj, key, axes, emitChange);
+      this.element.appendChild(result.element);
+      this.updateWidget = (v) => result.update(v as Record<string, unknown>);
     } else if (isRange) {
-      const [wrapper, valueDisplay] = createSliderElement(
+      const result = createSliderElement(
         doc, obj, key,
         params.min ?? 0, params.max ?? 100, params.step ?? 1,
         (value ?? params.min ?? 0) as number,
         emitChange,
       );
-      this.element.append(wrapper, valueDisplay);
+      this.element.append(result.wrapper, result.valueDisplay);
+      this.updateWidget = (v) => result.update(v as number);
     } else if (typeof value === "number") {
-      const el = createNumberElement(doc, obj, key, value, { min: params?.min, max: params?.max, step: params?.step }, emitChange);
-      this.element.appendChild(el);
+      const result = createNumberElement(doc, obj, key, value, { min: params?.min, max: params?.max, step: params?.step }, emitChange);
+      this.element.appendChild(result.element);
+      this.updateWidget = (v) => result.update(v as number);
     } else {
-      const el = createTextElement(doc, obj, key, String(value ?? ""), emitChange);
-      this.element.appendChild(el);
+      const result = createTextElement(doc, obj, key, String(value ?? ""), emitChange);
+      this.element.appendChild(result.element);
+      this.updateWidget = (v) => result.update(v as string);
     }
   }
 
@@ -72,5 +79,8 @@ export class InputBindingApi {
 
   setValue(value: unknown): void {
     this.obj[this.key] = value;
+    if (this.updateWidget) {
+      this.updateWidget(value);
+    }
   }
 }

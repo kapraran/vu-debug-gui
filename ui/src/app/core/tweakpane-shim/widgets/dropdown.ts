@@ -23,7 +23,7 @@ export function createDropdownElement(
   rawOptions: Record<string, unknown> | unknown[],
   currentValue: unknown,
   onChange: (value: unknown) => void,
-): HTMLElement {
+): { element: HTMLElement; update: (value: unknown) => void } {
   ensureDropdownListener(doc);
 
   const options = normalizeOptions(rawOptions);
@@ -75,5 +75,19 @@ export function createDropdownElement(
     optionsContainer.classList.toggle("open");
   });
 
-  return wrapper;
+  const update = (val: unknown) => {
+    obj[key] = val;
+    const newKey = findKeyByValue(options, val);
+    const display = newKey ?? String(val ?? keys[0] ?? "");
+    headerValue.textContent = display;
+    for (const child of optionsContainer.children) {
+      if ((child as HTMLElement).textContent === display) {
+        (child as HTMLElement).dataset.selected = "true";
+      } else {
+        delete (child as HTMLElement).dataset.selected;
+      }
+    }
+  };
+
+  return { element: wrapper, update };
 }

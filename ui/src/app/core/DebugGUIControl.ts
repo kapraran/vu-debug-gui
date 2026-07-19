@@ -11,7 +11,7 @@ export default class DebugGUIControl {
   readonly type: DebugGUIControlType;
   readonly name: string;
   readonly isClient: boolean;
-  readonly defValue: unknown;
+  readonly value: unknown;
   readonly min?: number;
   readonly max?: number;
   readonly step?: number;
@@ -25,17 +25,17 @@ export default class DebugGUIControl {
     this.isClient = controlData.IsClient;
 
     const opts: ControlOptions = controlData.Options ?? {};
-    this.defValue = opts.DefValue;
-    this.min = opts.Min;
-    this.max = opts.Max;
-    this.step = opts.Step;
-    this.values = opts.Values;
+    this.value = opts.value;
+    this.min = opts.min;
+    this.max = opts.max;
+    this.step = opts.step;
+    this.values = opts.values;
 
     if (opts.x != null) {
       const resolveAxis = (a: typeof opts.x | typeof opts.y | typeof opts.z | typeof opts.w): { min?: number; max?: number; step?: number } => ({
-        min: a?.Min,
-        max: a?.Max,
-        step: a?.Step,
+        min: a?.min,
+        max: a?.max,
+        step: a?.step,
       });
       this.axes = {
         x: resolveAxis(opts.x),
@@ -59,7 +59,7 @@ export default class DebugGUIControl {
 
   createObjValue(): unknown {
     if (this.type === DebugGUIControlType.Button) return this.callback.bind(this);
-    if (this.type === DebugGUIControlType.Text) return String(this.defValue ?? "");
-    return this.defValue;
+    if (this.type === DebugGUIControlType.Text) return String(this.value ?? "");
+    return this.value;
   }
 }
