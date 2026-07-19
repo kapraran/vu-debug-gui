@@ -2,6 +2,25 @@ import { enableKeyboard, resetKeyboard } from "./WebUI";
 
 let stylesInjected = false;
 
+export type AxisParams = {
+  min?: number;
+  max?: number;
+  step?: number;
+};
+
+export type InputBindingParams = {
+  label?: string;
+  slider?: true;
+  options?: Record<string, any> | any[];
+  min?: number;
+  max?: number;
+  step?: number;
+  x?: AxisParams;
+  y?: AxisParams;
+  z?: AxisParams;
+  w?: AxisParams;
+};
+
 function injectStyles(doc: Document) {
   if (stylesInjected) return;
   stylesInjected = true;
@@ -405,6 +424,20 @@ function stepDecimals(step: number): number {
   return s.includes(".") ? s.split(".")[1].length : 0;
 }
 
+function normalizeOptions(raw: Record<string, any> | any[]): Record<string, any> {
+  if (Array.isArray(raw)) {
+    return Object.fromEntries(raw.map((v) => [String(v), v]));
+  }
+  return raw;
+}
+
+function findKeyByValue(options: Record<string, any>, value: any): string | undefined {
+  for (const [k, v] of Object.entries(options)) {
+    if (v === value) return k;
+  }
+  return undefined;
+}
+
 class ButtonApi {
   readonly element: HTMLButtonElement;
   private clickHandlers = new Set<(ev: any) => void>();
@@ -429,12 +462,12 @@ class InputBindingApi {
   readonly element: HTMLElement;
   private changeHandlers = new Set<(ev: { value: any }) => void>();
 
-  constructor(doc: Document, obj: Record<string, any>, key: string, params?: any) {
+  constructor(doc: Document, obj: Record<string, any>, key: string, params?: InputBindingParams) {
     this.element = doc.createElement("div");
     this.element.className = "shim-input";
 
     const value = obj[key];
-    const isRange = params && params.slider === true;
+    const isRange = params?.slider === true;
     const isDropdown = params && "options" in params;
     const isVector = params && "x" in params;
 
@@ -483,8 +516,10 @@ class InputBindingApi {
     } else if (isDropdown && params.options) {
       ensureDropdownListener(doc);
 
-      const keys = Object.keys(params.options);
-      const currentValue = String(value ?? keys[0] ?? "");
+      const options = normalizeOptions(params.options);
+      const keys = Object.keys(options);
+      const currentKey = findKeyByValue(options, value);
+      const currentValue = currentKey ?? String(value ?? keys[0] ?? "");
 
       const wrapper = doc.createElement("div");
       wrapper.className = "shim-dropdown-wrapper";
@@ -518,7 +553,7 @@ class InputBindingApi {
           });
           opt.dataset.selected = "true";
           headerValue.textContent = optKey;
-          obj[key] = params.options[optKey];
+          obj[key] = options[optKey];
           this.changeHandlers.forEach((h) => h({ value: obj[key] }));
         });
         optionsContainer.appendChild(opt);
@@ -659,8 +694,15 @@ class InputBindingApi {
       inputEl.addEventListener("change", () => {
         if (numeric) {
           if (isValidNumber(inputEl.value)) {
-            const num = Number(inputEl.value);
+            let num = Number(inputEl.value);
+            if (params?.min != null) num = Math.max(params.min, num);
+            if (params?.max != null) num = Math.min(params.max, num);
+            if (params?.step != null) {
+              const decimals = stepDecimals(params.step);
+              num = parseFloat((Math.round(num / params.step) * params.step).toFixed(decimals));
+            }
             obj[key] = num;
+            inputEl.value = String(num);
             this.changeHandlers.forEach((h) => h({ value: num }));
           } else {
             inputEl.value = String(obj[key] ?? "");
@@ -725,7 +767,7 @@ class FolderApi {
     return folder;
   }
 
-  addBinding(obj: Record<string, any>, key: string, params?: any): InputBindingApi {
+  addBinding(obj: Record<string, any>, key: string, params?: InputBindingParams): InputBindingApi {
     const binding = new InputBindingApi(this.element.ownerDocument!, obj, key, params);
     this.contentEl.appendChild(binding.element);
     return binding;
@@ -775,7 +817,7 @@ class Pane {
     return folder;
   }
 
-  addBinding(obj: Record<string, any>, key: string, params?: any): InputBindingApi {
+  addBinding(obj: Record<string, any>, key: string, params?: InputBindingParams): InputBindingApi {
     const binding = new InputBindingApi(this.element.ownerDocument!, obj, key, params);
     this.contentEl.appendChild(binding.element);
     return binding;

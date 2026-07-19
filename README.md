@@ -107,6 +107,8 @@ options = {
 }
 ```
 
+`Min`, `Max`, and `Step` are enforced on blur — values are clamped to the range and rounded to the nearest step increment.
+
 ```lua
 -- Simple: just a default
 DebugGUI:Number("Multiplier", 1.0, function(value, player)
@@ -146,14 +148,27 @@ end)
 DebugGUI:Dropdown(name, options, [context,] callback)
 
 options = {
-  DefValue   -- index into Values (defaults to 0)
-  Values     -- array of option strings
+  Values     -- REQUIRED. Array of values or table mapping labels to values
+  DefValue   -- initial value (defaults to first element of Values)
 }
 ```
 
+`Values` can be a simple array (display === stored value) or a label→value map:
+
 ```lua
-DebugGUI:Dropdown("Map", {DefValue = 0, Values = {"Caspian Border", "Operation Metro", "Damavand Peak"}}, function(value, player)
-  print("Selected map: " .. value)
+-- Array: display equals stored value
+DebugGUI:Dropdown("Map", {Values = {"Caspian Border", "Operation Metro", "Damavand Peak"}}, function(value, player)
+  print(value)  -- "Caspian Border", "Operation Metro", or "Damavand Peak"
+end)
+
+-- Key-value: different display label and stored value
+DebugGUI:Dropdown("Quality", {Values = {Low = 128, Medium = 256, High = 512}, DefValue = 256}, function(value, player)
+  print(value)  -- 128, 256, or 512
+end)
+
+-- With explicit default
+DebugGUI:Dropdown("Mode", {Values = {"Easy", "Normal", "Hard"}, DefValue = "Normal"}, function(value, player)
+  -- ...
 end)
 ```
 

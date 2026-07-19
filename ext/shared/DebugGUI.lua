@@ -347,9 +347,22 @@ end
 function DebugGUI.static:Dropdown(name, options, context, callback)
   options = options or {}
 
-  -- defaults
-  options.Values = (options.Values ~= nil and options.Values) or {0}
-  options.DefValue = options.DefValue or 0
+  if options.Values == nil then
+    error("Dropdown requires a Values table")
+  end
+
+  if options.DefValue == nil then
+    if type(options.Values) == 'table' and options.Values[1] ~= nil then
+      -- array-style: use first element
+      options.DefValue = options.Values[1]
+    else
+      -- key-value table: pick the first pair
+      for _, value in pairs(options.Values) do
+        options.DefValue = value
+        break
+      end
+    end
+  end
 
   local control = DebugGUIControl(
     DebugGUIControlType.Dropdown,
