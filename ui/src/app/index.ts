@@ -1,13 +1,8 @@
 import DebugGUIManager from "./core/DebugGUIManager";
+import type { VeExt } from "./types";
 
 declare global {
-  interface Window { vext: {
-    addControls: Function;
-    clearControls: Function;
-    showUI: Function;
-    hideUI: Function;
-    setControlValue: Function;
-  }; }
+  interface Window { vext: VeExt; }
 }
 
 const manager = new DebugGUIManager();

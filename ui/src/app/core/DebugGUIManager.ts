@@ -1,15 +1,16 @@
 import DebugGUIControlType from "../enums/DebugGUIControlType";
 import DebugGUIControl from "./DebugGUIControl";
-import { Pane, FolderApi } from "./TweakpaneShim";
-import type { InputBindingApi } from "./TweakpaneShim";
+import { Pane, FolderApi } from "./tweakpane-shim";
+import type { InputBindingApi } from "./tweakpane-shim";
+import type { ControlData } from "../types";
 
 type GUI = Pane | FolderApi;
 
 export default class DebugGUIManager {
   private gui: Pane;
   private controls: DebugGUIControl[];
-  private folders: { [name: string]: GUI };
-  private datObj: { [name: string]: any };
+  private folders: Record<string, GUI>;
+  private datObj: Record<string, unknown>;
   private bindings: Map<string, InputBindingApi>;
   private container: HTMLElement;
 
@@ -27,11 +28,11 @@ export default class DebugGUIManager {
     this.bindings = new Map();
   }
 
-  resolveGUI(controlData: Record<string, any>) {
+  resolveGUI(controlData: ControlData): GUI {
     let gui: GUI = this.gui;
 
-    if (controlData.hasOwnProperty("Folder")) {
-      if (!this.folders.hasOwnProperty(controlData.Folder)) {
+    if ("Folder" in controlData && controlData.Folder != null) {
+      if (!(controlData.Folder in this.folders)) {
         this.folders[controlData.Folder] = this.gui.addFolder({
           title: controlData.Folder,
         });
@@ -48,7 +49,7 @@ export default class DebugGUIManager {
       .addButton({
         title: control.name,
       })
-      .on("click", this.datObj[control.id]);
+      .on("click", () => control.callback({}));
   }
 
   addCheckbox(gui: GUI, control: DebugGUIControl) {
@@ -118,7 +119,7 @@ export default class DebugGUIManager {
     this.bindings.set(control.id, binding);
   }
 
-  addControl(controlData: Record<string, any>) {
+  addControl(controlData: ControlData): void {
     if (controlData.Id in this.datObj) return;
 
     const gui = this.resolveGUI(controlData);
@@ -130,32 +131,23 @@ export default class DebugGUIManager {
     const type = controlData.Type;
 
     if (type === DebugGUIControlType.Button) this.addButton(gui, control);
-    else if (type === DebugGUIControlType.Checkbox)
-      this.addCheckbox(gui, control);
+    else if (type === DebugGUIControlType.Checkbox) this.addCheckbox(gui, control);
     else if (type === DebugGUIControlType.Text) this.addText(gui, control);
-    else if (type == DebugGUIControlType.Number) this.addNumber(gui, control);
-    else if (type == DebugGUIControlType.Range) this.addRange(gui, control);
-    else if (type == DebugGUIControlType.Dropdown)
-      this.addDropdown(gui, control);
-    else if (
-      [
-        DebugGUIControlType.Vec2,
-        DebugGUIControlType.Vec3,
-        DebugGUIControlType.Vec4,
-      ].includes(type)
-    )
-      this.addVector(gui, control);
+    else if (type === DebugGUIControlType.Number) this.addNumber(gui, control);
+    else if (type === DebugGUIControlType.Range) this.addRange(gui, control);
+    else if (type === DebugGUIControlType.Dropdown) this.addDropdown(gui, control);
+    else if (type === DebugGUIControlType.Vec2 || type === DebugGUIControlType.Vec3 || type === DebugGUIControlType.Vec4) this.addVector(gui, control);
   }
 
-  addControls(controlsData: Record<string, any>[]) {
-    for (let control of controlsData) this.addControl(control);
+  addControls(controlsData: ControlData[]): void {
+    for (const control of controlsData) this.addControl(control);
   }
 
   isHidden() {
     return window.getComputedStyle(this.container, null).display === "none";
   }
 
-  setControlValue(data: { id: string; value: any }) {
+  setControlValue(data: { id: string; value: unknown }): void {
     const binding = this.bindings.get(data.id);
     if (!binding) return;
     binding.setValue(data.value);

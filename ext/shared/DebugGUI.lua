@@ -230,7 +230,7 @@ function DebugGUIManager:Show(clear)
     return
   end
 
-  clear = not (not clear)
+  clear = clear == true
 
   -- convert to array
   local controlsOrdered = {}
@@ -397,7 +397,7 @@ function DebugGUI.static:Dropdown(name, options, context, callback)
   return debugGUIManager:Add(control)
 end
 
-function DebugGUI:Vector(name, options, context, callback)
+function DebugGUI.static:Vector(name, options, context, callback)
   -- defaults
   options.x = SetDefaultNumOpts(options.x, true)
   options.y = SetDefaultNumOpts(options.y, true)

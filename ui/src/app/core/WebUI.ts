@@ -2,10 +2,15 @@ declare class WebUI {
   static Call: (cmd: string) => void;
 }
 
+/* c8 ignore next 4 */
+if (import.meta.env.DEV) {
+  (window as unknown as Record<string, unknown>).WebUI ??= { Call: (...args: unknown[]) => console.log("[WebUI.Call]", ...args) } as never;
+}
+
 export type EventPayload = {
   id: string;
   isClient: boolean;
-  value?: any;
+  value?: unknown;
 };
 
 function throttle(fn: Function, delay: number) {
