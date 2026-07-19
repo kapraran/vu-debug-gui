@@ -4,15 +4,6 @@ import { Pane, FolderApi } from "./TweakpaneShim";
 
 type GUI = Pane | FolderApi;
 
-function toLowerCaseProps(obj: Record<string, any> | undefined) {
-  if (!obj) return undefined;
-
-  return Object.keys(obj).reduce((newObj, key) => {
-    newObj[key.toLowerCase()] = obj[key];
-    return newObj;
-  }, {} as Record<string, any>);
-}
-
 export default class DebugGUIManager {
   private gui: Pane;
   private controls: DebugGUIControl[];
@@ -74,45 +65,32 @@ export default class DebugGUIManager {
   }
 
   addNumber(gui: GUI, control: DebugGUIControl) {
-    const opts = control.options as any;
-    const params: Record<string, any> = {
-      label: control.name,
-    };
-
-    if ('Min' in opts) params.min = opts.Min;
-    if ('Max' in opts) params.max = opts.Max;
-    if (opts.Step != null) params.step = opts.Step;
-
     gui
-      .addBinding(this.datObj, control.id, params)
+      .addBinding(this.datObj, control.id, {
+        label: control.name,
+        min: control.min,
+        max: control.max,
+        step: control.step,
+      })
       .on("change", control.callback.bind(control));
   }
 
   addRange(gui: GUI, control: DebugGUIControl) {
-    if (!('Min' in control.options)) {
-      throw new Error('Range control requires Min option');
-    }
-
     gui
       .addBinding(this.datObj, control.id, {
         label: control.name,
-        min: control.options.Min,
-        max: control.options.Max,
-        step: control.options.Step,
+        min: control.min ?? 0,
+        max: control.max ?? 100,
+        step: control.step ?? 1,
         slider: true,
       })
       .on("change", control.callback.bind(control));
   }
 
   addDropdown(gui: GUI, control: DebugGUIControl) {
-    if (!('Values' in control.options)) {
-      throw new Error('Dropdown control requires Values option');
-    }
-
-    const options = control.options.Values.reduce((acc: Record<string, any>, curr: any) => {
-      acc[curr] = curr;
-      return acc;
-    }, {} as Record<string, any>);
+    const options = Array.isArray(control.values)
+      ? Object.fromEntries(control.values.map((v) => [String(v), v]))
+      : (control.values as Record<string, any>) ?? {};
 
     gui
       .addBinding(this.datObj, control.id, {
@@ -123,27 +101,11 @@ export default class DebugGUIManager {
   }
 
   addVector(gui: GUI, control: DebugGUIControl) {
-    if (!('x' in control.options)) {
-      throw new Error('Vector control requires x option');
-    }
-
-    const lowerCaseOpts: Record<string, any> = {
-      label: control.name,
-      x: toLowerCaseProps(control.options.x),
-      y: toLowerCaseProps(control.options.y),
-      z: toLowerCaseProps(control.options.z),
-      w: toLowerCaseProps(control.options.w),
-    };
-
-    if (control.type === DebugGUIControlType.Vec2) {
-      delete lowerCaseOpts.z;
-      delete lowerCaseOpts.w;
-    } else if (control.type === DebugGUIControlType.Vec3) {
-      delete lowerCaseOpts.w;
-    }
-
     gui
-      .addBinding(this.datObj, control.id, lowerCaseOpts)
+      .addBinding(this.datObj, control.id, {
+        label: control.name,
+        ...control.axes,
+      })
       .on("change", control.callback.bind(control));
   }
 
