@@ -48,9 +48,6 @@ export const CSS_CONTENT = `
 .shim-pane-content {
   padding: 8px 8px 8px 14px;
 }
-.shim-pane-content > * + * {
-  margin-top: 6px;
-}
 .shim-btn {
   background-color: #2a2d35;
   border: 1px solid rgba(255,255,255,0.08);
@@ -131,6 +128,9 @@ export const CSS_CONTENT = `
   min-height: 22px;
   padding: 0 8px;
   position: relative;
+}
+.shim-pane-content > * + * {
+  margin-top: 6px;
 }
 .shim-input-clickable {
   cursor: pointer;
