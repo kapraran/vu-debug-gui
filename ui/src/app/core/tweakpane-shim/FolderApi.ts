@@ -17,7 +17,6 @@ export class FolderApi extends WidgetContainer {
 
       const chevron = doc.createElement("span");
       chevron.className = "shim-folder-chevron";
-      chevron.textContent = "\u25B8";
 
       const titleText = doc.createElement("span");
       titleText.textContent = title;
