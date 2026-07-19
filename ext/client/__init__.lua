@@ -75,3 +75,21 @@ end)
 
 Events:Subscribe("DBGUI:Show", OnShow)
 NetEvents:Subscribe("DBGUI:Show.Net", OnShow)
+
+local function OnSetVisible(id, visible)
+  WebUI:ExecuteJS("vext.setControlVisible(" .. json.encode({id = id, visible = visible}) .. ")")
+end
+
+Events:Subscribe("DBGUI:SetVisible", OnSetVisible)
+NetEvents:Subscribe("DBGUI:SetVisible.Net", function(id, visible)
+  OnSetVisible(id, visible)
+end)
+
+local function OnSetDisabled(id, disabled)
+  WebUI:ExecuteJS("vext.setControlDisabled(" .. json.encode({id = id, disabled = disabled}) .. ")")
+end
+
+Events:Subscribe("DBGUI:SetDisabled", OnSetDisabled)
+NetEvents:Subscribe("DBGUI:SetDisabled.Net", function(id, disabled)
+  OnSetDisabled(id, disabled)
+end)

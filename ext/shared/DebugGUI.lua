@@ -49,6 +49,8 @@ function DebugGUIControl:__init(_type, name, options, callback)
   self.isClient = SharedUtils:IsClientModule()
 
   self.lastValue = options.value
+  self.__visible = options.visible ~= false
+  self.__disabled = options.disabled == true
   self.folder = nil
   self.order = DebugGUIControl.OrderIndex
 
@@ -112,6 +114,51 @@ function DebugGUIControl:Get()
   return self.lastValue
 end
 
+function DebugGUIControl:Dispatch(idStr, eventName, netEventName, ...)
+  if self.isClient then
+    Events:Dispatch(eventName, idStr, ...)
+  else
+    NetEvents:Broadcast(netEventName, idStr, ...)
+  end
+end
+
+function DebugGUIControl:Show()
+  if self.__visible then return end
+  self.__visible = true
+  self:Dispatch(self.id:ToString("D"), "DBGUI:SetVisible", "DBGUI:SetVisible.Net", true)
+end
+
+function DebugGUIControl:Hide()
+  if not self.__visible then return end
+  self.__visible = false
+  self:Dispatch(self.id:ToString("D"), "DBGUI:SetVisible", "DBGUI:SetVisible.Net", false)
+end
+
+function DebugGUIControl:Toggle()
+  if self.__visible then self:Hide() else self:Show() end
+end
+
+function DebugGUIControl:SetVisible(visible)
+  if type(visible) == "function" then
+    self.__visibilityPred = visible
+    debugGUIManager:RegisterVisibilityPred(self)
+    visible = visible()
+  end
+  if visible then self:Show() else self:Hide() end
+end
+
+function DebugGUIControl:Enable()
+  if not self.__disabled then return end
+  self.__disabled = false
+  self:Dispatch(self.id:ToString("D"), "DBGUI:SetDisabled", "DBGUI:SetDisabled.Net", false)
+end
+
+function DebugGUIControl:Disable()
+  if self.__disabled then return end
+  self.__disabled = true
+  self:Dispatch(self.id:ToString("D"), "DBGUI:SetDisabled", "DBGUI:SetDisabled.Net", true)
+end
+
 function DebugGUIControl:AsTable()
   return {
     Id = self.id:ToString("D"),
@@ -134,8 +181,24 @@ function DebugGUIManager:__init()
 
   self.__controlsRequested = false
   self.__folderStack = {}
+  self.__visibilityPreds = {}
 
   self:RegisterEvents()
+end
+
+function DebugGUIManager:RegisterVisibilityPred(control)
+  self.__visibilityPreds[control.id:ToString("D")] = control
+end
+
+function DebugGUIManager:EvaluateVisibilityPreds()
+  for id, control in pairs(self.__visibilityPreds) do
+    if control.__visibilityPred then
+      local newVis = control.__visibilityPred()
+      if newVis ~= control.__visible then
+        if newVis then control:Show() else control:Hide() end
+      end
+    end
+  end
 end
 
 function DebugGUIManager:RegisterEvents()
@@ -157,6 +220,7 @@ function DebugGUIManager:OnChange(id, value, player)
   end
 
   control:ExecuteCallback(value, player)
+  self:EvaluateVisibilityPreds()
 end
 
 function DebugGUIManager:OnChangeNet(player, id, value)

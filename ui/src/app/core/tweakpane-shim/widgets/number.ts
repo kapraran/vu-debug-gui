@@ -1,4 +1,4 @@
-import { isValidNumber, stepDecimals } from "../utils";
+import { isValidNumber, stepDecimals, applyFormat } from "../utils";
 import { wireKeyboard } from "./sharedInput";
 
 export type NumberConstraints = {
@@ -14,6 +14,7 @@ export function createNumberElement(
   value: number,
   constraints: NumberConstraints,
   onChange: (value: number) => void,
+  format?: string,
 ): { element: HTMLElement; update: (value: number) => void } {
   const { min, max, step } = constraints;
   const inputEl = doc.createElement("input");
@@ -42,7 +43,7 @@ export function createNumberElement(
   });
 
   const update = (val: number) => {
-    inputEl.value = String(val);
+    inputEl.value = format ? applyFormat(val, format) : String(val);
     obj[key] = val;
   };
 

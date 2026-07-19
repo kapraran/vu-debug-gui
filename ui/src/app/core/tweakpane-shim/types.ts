@@ -11,6 +11,8 @@ export type InputBindingParams = {
   min?: number;
   max?: number;
   step?: number;
+  format?: string;
+  tooltip?: string;
   x?: AxisParams;
   y?: AxisParams;
   z?: AxisParams;

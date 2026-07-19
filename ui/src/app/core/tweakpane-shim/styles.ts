@@ -363,4 +363,65 @@ export const CSS_CONTENT = `
   background-color: rgba(232,147,60,0.25);
   color: #fff;
 }
+.shim-tooltip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.08);
+  color: #8a8d98;
+  font-size: 9px;
+  font-weight: 600;
+  cursor: help;
+  flex-shrink: 0;
+  position: relative;
+  margin-left: 2px;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.shim-tooltip-icon:hover {
+  background-color: #e8933c;
+  color: #14161b;
+}
+.shim-tooltip-popover {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  background-color: #14161b;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 400;
+  color: #e8e9ee;
+  white-space: normal;
+  max-width: 220px;
+  width: auto;
+  pointer-events: none;
+  z-index: 1000;
+  line-height: 1.4;
+}
+.shim-tooltip-icon:hover + .shim-tooltip-popover,
+.shim-tooltip-popover:hover {
+  display: block;
+}
+.shim-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.shim-disabled .shim-checkbox-box {
+  border-color: rgba(255,255,255,0.06);
+}
+.shim-disabled .shim-checkbox-box.checked {
+  background-color: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.06);
+}
+.shim-btn-disabled {
+  opacity: 0.4;
+  cursor: default;
+}
 `;

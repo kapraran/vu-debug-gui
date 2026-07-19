@@ -13,6 +13,8 @@ const vext = {
   showUI: manager.showUI.bind(manager),
   hideUI: manager.hideUI.bind(manager),
   setControlValue: manager.setControlValue.bind(manager),
+  setControlVisible: manager.setControlVisible.bind(manager),
+  setControlDisabled: manager.setControlDisabled.bind(manager),
 };
 
 window.vext = vext;

@@ -16,4 +16,28 @@ export class ButtonApi {
     this.clickHandlers.add(handler);
     return this;
   }
+
+  show(): void {
+    this.element.style.display = "";
+  }
+
+  hide(): void {
+    this.element.style.display = "none";
+  }
+
+  toggle(): void {
+    if (this.element.style.display === "none") {
+      this.element.style.display = "";
+    } else {
+      this.element.style.display = "none";
+    }
+  }
+
+  enable(): void {
+    this.element.classList.remove("shim-btn-disabled");
+  }
+
+  disable(): void {
+    this.element.classList.add("shim-btn-disabled");
+  }
 }

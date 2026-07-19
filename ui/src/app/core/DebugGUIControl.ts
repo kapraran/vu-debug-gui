@@ -16,6 +16,10 @@ export default class DebugGUIControl {
   readonly max?: number;
   readonly step?: number;
   readonly values?: unknown[] | Record<string, unknown>;
+  readonly format?: string;
+  readonly tooltip?: string;
+  readonly visible: boolean;
+  readonly disabled: boolean;
   readonly axes?: { x: AxisOptions; y: AxisOptions; z?: AxisOptions; w?: AxisOptions };
 
   constructor(controlData: ControlData) {
@@ -30,6 +34,10 @@ export default class DebugGUIControl {
     this.max = opts.max;
     this.step = opts.step;
     this.values = opts.values;
+    this.format = opts.format;
+    this.tooltip = opts.tooltip;
+    this.visible = opts.visible ?? true;
+    this.disabled = opts.disabled ?? false;
 
     if (opts.x != null) {
       const resolveAxis = (a: typeof opts.x | typeof opts.y | typeof opts.z | typeof opts.w): { min?: number; max?: number; step?: number } => ({

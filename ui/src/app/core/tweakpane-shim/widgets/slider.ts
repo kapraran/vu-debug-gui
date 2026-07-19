@@ -1,4 +1,4 @@
-import { stepDecimals } from "../utils";
+import { stepDecimals, applyFormat } from "../utils";
 
 export function createSliderElement(
   doc: Document,
@@ -9,6 +9,7 @@ export function createSliderElement(
   step: number,
   currentValue: number,
   onChange: (value: number) => void,
+  format?: string,
 ): { wrapper: HTMLElement; valueDisplay: HTMLElement; update: (value: number) => void } {
   const decimals = stepDecimals(step);
 
@@ -30,7 +31,7 @@ export function createSliderElement(
   valueDisplay.className = "shim-slider-value shim-well";
 
   const formatValue = (val: number): string =>
-    decimals > 0 ? val.toFixed(decimals) : String(Math.round(val));
+    format ? applyFormat(val, format) : (decimals > 0 ? val.toFixed(decimals) : String(Math.round(val)));
 
   const updateSlider = (val: number) => {
     const pct = Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100));

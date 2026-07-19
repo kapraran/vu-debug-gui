@@ -29,6 +29,22 @@ export class InputBindingApi {
       labelEl.className = "shim-input-label";
       labelEl.textContent = params.label;
       this.element.appendChild(labelEl);
+
+      if (params?.tooltip) {
+        const icon = doc.createElement("span");
+        icon.className = "shim-tooltip-icon";
+        icon.textContent = "?";
+        this.element.appendChild(icon);
+
+        const popover = doc.createElement("div");
+        popover.className = "shim-tooltip-popover";
+        const lines = params.tooltip.split("\n");
+        for (let i = 0; i < lines.length; i++) {
+          if (i > 0) popover.appendChild(doc.createElement("br"));
+          popover.appendChild(doc.createTextNode(lines[i]));
+        }
+        this.element.appendChild(popover);
+      }
     }
 
     const emitChange = (newValue: unknown) => {
@@ -58,11 +74,12 @@ export class InputBindingApi {
         params.min ?? 0, params.max ?? 100, params.step ?? 1,
         (value ?? params.min ?? 0) as number,
         emitChange,
+        params?.format,
       );
       this.element.append(result.wrapper, result.valueDisplay);
       this.updateWidget = (v) => result.update(v as number);
     } else if (typeof value === "number") {
-      const result = createNumberElement(doc, obj, key, value, { min: params?.min, max: params?.max, step: params?.step }, emitChange);
+      const result = createNumberElement(doc, obj, key, value, { min: params?.min, max: params?.max, step: params?.step }, emitChange, params?.format);
       this.element.appendChild(result.element);
       this.updateWidget = (v) => result.update(v as number);
     } else {
@@ -81,6 +98,38 @@ export class InputBindingApi {
     this.obj[this.key] = value;
     if (this.updateWidget) {
       this.updateWidget(value);
+    }
+  }
+
+  show(): void {
+    this.element.style.display = "";
+  }
+
+  hide(): void {
+    this.element.style.display = "none";
+  }
+
+  toggle(): void {
+    if (this.element.style.display === "none") {
+      this.element.style.display = "";
+    } else {
+      this.element.style.display = "none";
+    }
+  }
+
+  enable(): void {
+    this.element.classList.remove("shim-disabled");
+    const inputs = this.element.querySelectorAll("input");
+    for (const input of inputs) {
+      input.disabled = false;
+    }
+  }
+
+  disable(): void {
+    this.element.classList.add("shim-disabled");
+    const inputs = this.element.querySelectorAll("input");
+    for (const input of inputs) {
+      input.disabled = true;
     }
   }
 }

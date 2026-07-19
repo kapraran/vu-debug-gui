@@ -21,6 +21,10 @@ export interface ControlOptions {
   max?: number;
   step?: number;
   values?: unknown[] | Record<string, unknown>;
+  format?: string;
+  tooltip?: string;
+  visible?: boolean;
+  disabled?: boolean;
   x?: AxisOptions;
   y?: AxisOptions;
   z?: AxisOptions;
@@ -33,4 +37,6 @@ export interface VeExt {
   showUI: () => void;
   hideUI: () => void;
   setControlValue: (data: { id: string; value: unknown }) => void;
+  setControlVisible: (data: { id: string; visible: boolean }) => void;
+  setControlDisabled: (data: { id: string; disabled: boolean }) => void;
 }

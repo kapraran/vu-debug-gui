@@ -6,8 +6,11 @@ export abstract class WidgetContainer {
   abstract readonly element: HTMLElement;
   protected abstract contentEl: HTMLElement;
 
-  addButton(params: { title: string }): ButtonApi {
+  addButton(params: { title: string; tooltip?: string }): ButtonApi {
     const btn = new ButtonApi(params.title, this.element.ownerDocument!);
+    if (params.tooltip) {
+      btn.element.title = params.tooltip;
+    }
     this.contentEl.appendChild(btn.element);
     return btn;
   }
