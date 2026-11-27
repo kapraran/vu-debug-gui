@@ -20,13 +20,6 @@ export const CSS_CONTENT = `
 .shim-pane input {
   user-select: text;
 }
-.shim-pane ::-webkit-scrollbar {
-  width: 8px;
-}
-.shim-pane ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.12);
-  border-radius: 4px;
-}
 .shim-pane-title {
   background-color: rgba(255,255,255,0.03);
   border-bottom: 1px solid rgba(232,147,60,0.4);
@@ -153,10 +146,9 @@ export const CSS_CONTENT = `
 .shim-well:hover {
   border-color: rgba(255,255,255,0.14);
 }
-.shim-well:focus, .shim-well:focus-within {
+.shim-well:focus {
   border-color: rgba(232,147,60,0.6);
   box-shadow: 0 0 0 1px rgba(232,147,60,0.25);
-  outline: none;
 }
 .shim-input-number, .shim-input-text {
   flex: 1;
@@ -216,12 +208,18 @@ export const CSS_CONTENT = `
   display: flex;
   align-items: center;
   height: 20px;
-  min-width: 34px;
-  padding: 0 6px;
+  width: 62px;
+  min-width: 62px;
+  padding: 0 4px;
   color: #e8e9ee;
+  background-color: #14161b;
+  border: 0;
   font-family: 'Segoe UI', sans-serif;
   font-size: 11px;
   flex-shrink: 0;
+  text-align: right;
+  cursor: text;
+  user-select: text;
 }
 .shim-checkbox-spacer {
   flex: 1;
@@ -294,7 +292,6 @@ export const CSS_CONTENT = `
   font-size: 11px;
   padding: 0 3px;
   text-align: left;
-  outline: none;
 }
 .shim-dropdown-wrapper {
   position: relative;
