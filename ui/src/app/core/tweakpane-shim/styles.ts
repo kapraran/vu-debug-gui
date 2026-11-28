@@ -135,7 +135,7 @@ export const CSS_CONTENT = `
   text-overflow: ellipsis;
   white-space: nowrap;
   flex-shrink: 0;
-  width: 38%;
+  width: 33%;
 }
 .shim-well {
   background-color: #14161b;
@@ -213,13 +213,20 @@ export const CSS_CONTENT = `
   padding: 0 4px;
   color: #e8e9ee;
   background-color: #14161b;
-  border: 0;
+  border: 1px solid rgba(255,255,255,0.06);
   font-family: 'Segoe UI', sans-serif;
   font-size: 11px;
   flex-shrink: 0;
   text-align: right;
   cursor: text;
   user-select: text;
+}
+.shim-slider-value.shim-modified {
+  color: #e8933c;
+}
+.shim-slider-value:focus {
+  border-color: #e8933c;
+  box-shadow: 0 0 0 2px rgba(232,147,60,0.45);
 }
 .shim-checkbox-spacer {
   flex: 1;
