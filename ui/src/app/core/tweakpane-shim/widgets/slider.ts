@@ -13,6 +13,7 @@ export function createSliderElement(
   onChange: (value: number) => void,
 ): [wrapper: HTMLElement, valueDisplay: HTMLElement] {
   const decimals = stepDecimals(step);
+  const defaultValue = currentValue;
 
   const wrapper = doc.createElement("div");
   wrapper.className = "shim-slider-wrapper";
@@ -43,6 +44,13 @@ export function createSliderElement(
     fill.style.width = pct + "%";
     thumb.style.left = pct + "%";
     if (!editing) valueDisplay.value = formatValue(val);
+    // Compare displayed values, not raw floats: stock 0.694265... displays as
+    // 0.6943, and a step-quantized 0.6943 is the same value to the player.
+    if (formatValue(val) !== formatValue(defaultValue)) {
+      valueDisplay.classList.add("shim-modified");
+    } else {
+      valueDisplay.classList.remove("shim-modified");
+    }
   };
 
   const getValue = (clientX: number): number => {
@@ -56,6 +64,9 @@ export function createSliderElement(
   };
 
   const commitTypedValue = () => {
+    // Nothing was typed: the box still shows the current value. Committing here
+    // would quantize the stock float (0.694265... -> 0.6943) and fire onChange.
+    if (valueDisplay.value === formatValue(currentValue)) return;
     if (!isValidNumber(valueDisplay.value)) {
       valueDisplay.value = formatValue(currentValue);
       return;
@@ -78,19 +89,12 @@ export function createSliderElement(
     commitTypedValue();
   });
   valueDisplay.addEventListener("keydown", (e: KeyboardEvent) => {
-    if (e.key === "Enter") commitTypedValue();
-    // Arrow keys fine-tune by exactly one step (0.0001) - the slider thumb is
-    // pixel-limited (~0.01 per mouse pixel), so keyboard is the precise path.
-    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+    // GameFace reports Enter via keyCode 13 even when e.key is not "Enter".
+    // blur() commits through the normal path and also clears the editing flag.
+    if (e.key === "Enter" || e.keyCode === 13) {
       e.preventDefault();
-      const base = isValidNumber(valueDisplay.value) ? Number(valueDisplay.value) : currentValue;
-      const delta = (e.key === "ArrowUp" ? 1 : -1) * step;
-      let val = Math.max(min, Math.min(max, +(base + delta).toFixed(decimals)));
-      currentValue = val;
-      obj[key] = val;
-      valueDisplay.value = formatValue(val);
-      updateSlider(val);
-      onChange(val);
+      valueDisplay.blur();
+      return;
     }
   });
 
